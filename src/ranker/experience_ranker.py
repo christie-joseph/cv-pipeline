@@ -83,17 +83,27 @@ class ExperienceRanker:
 
             scores.append(ScoredExperience(experience=exp, score=round(float(composite), 3), best_title=best_title))
 
-        # Sort descending by composite score
-        scores.sort(key=lambda x: x.score, reverse=True)
+        # Maintain timeline continuity: preserve source-of-truth chronological order
+        # Optional experiences can only be omitted from the tail (older experiences), never in-between.
+        selected = []
+        for i, s in enumerate(scores):
+            if len(selected) >= self.config.max_experiences:
+                break
+            
+            # Check if any mandatory (non-optional) experience exists after this one
+            has_mandatory_after = any(not scores[j].experience.optional for j in range(i + 1, len(scores)))
+            
+            # Keep experience if: non-optional, or score >= threshold, or needed to prevent a gap before a mandatory job
+            if not s.experience.optional or s.score >= self.config.minimum_similarity or has_mandatory_after:
+                selected.append(s)
+            else:
+                # Optional, below threshold, and no mandatory experience follows -> safe to truncate timeline
+                break
 
-        # Apply minimum similarity floor
-        filtered = [s for s in scores if s.score >= self.config.minimum_similarity]
-        if not filtered:
-            filtered = scores[: self.config.max_experiences]
-        else:
-            filtered = filtered[: self.config.max_experiences]
+        if not selected:
+            selected = scores[: self.config.max_experiences]
 
-        return filtered
+        return selected
 
     def _compute_tfidf_scores(self, exp_texts: List[str], jd_text: str) -> List[float]:
         try:

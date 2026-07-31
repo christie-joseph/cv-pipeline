@@ -23,6 +23,7 @@ class Experience(BaseModel):
     start: str
     end: str
     importance: int = 5
+    optional: bool = False
     tags: List[str] = Field(default_factory=list)
     titles: TitleConfig
     bullets: List[Bullet] = Field(default_factory=list)
