@@ -96,13 +96,17 @@ def select_bullets_mmr(
 
 
 def _tfidf_scores(bullet_texts: List[str], jd_text: str):
-    documents = [jd_text] + bullet_texts
-    vectorizer = TfidfVectorizer(stop_words="english")
-    tfidf_matrix = vectorizer.fit_transform(documents)
-    
-    jd_vec = tfidf_matrix[0]
-    bullet_vecs = tfidf_matrix[1:]
-    
-    relevance_scores = cosine_similarity(bullet_vecs, jd_vec).flatten()
-    sim_matrix = cosine_similarity(bullet_vecs, bullet_vecs)
-    return relevance_scores, sim_matrix
+    try:
+        documents = [jd_text] + bullet_texts
+        vectorizer = TfidfVectorizer(stop_words="english")
+        tfidf_matrix = vectorizer.fit_transform(documents)
+        
+        jd_vec = tfidf_matrix[0]
+        bullet_vecs = tfidf_matrix[1:]
+        
+        relevance_scores = cosine_similarity(bullet_vecs, jd_vec).flatten()
+        sim_matrix = cosine_similarity(bullet_vecs, bullet_vecs)
+        return list(relevance_scores), sim_matrix
+    except Exception:
+        n = len(bullet_texts)
+        return [0.5] * n, np.zeros((n, n))

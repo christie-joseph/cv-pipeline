@@ -43,7 +43,11 @@ class ApiRewriter(BaseRewriter):
             temperature=0.3
         )
 
-        content = response.choices[0].message.content
-        if content:
-            return content.strip().strip('"')
+        if response and response.choices and len(response.choices) > 0:
+            choice = response.choices[0]
+            if choice.message and choice.message.content:
+                content = choice.message.content.strip().strip('"')
+                if content:
+                    return content
+                    
         return bullet_text

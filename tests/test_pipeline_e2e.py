@@ -1,10 +1,14 @@
+from pathlib import Path
 from src.pipeline import Pipeline
 from src.models.config import PipelineConfig
 
+project_root = Path(__file__).resolve().parent.parent
+
 
 def test_pipeline_e2e():
-    config = PipelineConfig.load_from_yaml("config.yaml")
-    config.output.compile_pdf = False  # Pure in-memory LaTeX string test
+    config_path = str(project_root / "config.yaml")
+    config = PipelineConfig.load_from_yaml(config_path)
+    config.output.compile_pdf = False
 
     pipeline = Pipeline(config=config)
     jd_text = """

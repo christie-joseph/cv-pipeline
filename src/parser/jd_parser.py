@@ -2,7 +2,7 @@ import re
 import spacy
 import yake
 import numpy as np
-from typing import List, Optional
+from typing import List
 from ..models.jd_profile import JDProfile
 
 NON_SKILL_STOPWORDS = {
@@ -19,11 +19,17 @@ NON_SKILL_STOPWORDS = {
 class JDParser:
     def __init__(self, embedding_model=None):
         self.embedding_model = embedding_model
+        self.nlp = None
+        
         try:
             self.nlp = spacy.load("en_core_web_sm")
         except Exception:
-            spacy.cli.download("en_core_web_sm")
-            self.nlp = spacy.load("en_core_web_sm")
+            try:
+                spacy.cli.download("en_core_web_sm")
+                self.nlp = spacy.load("en_core_web_sm")
+            except Exception:
+                # Fallback to blank model if offline and download fails
+                self.nlp = spacy.blank("en")
         
         self.kw_extractor = yake.KeywordExtractor(
             lan="en", n=2, dedupLim=0.8, top=20, features=None
@@ -40,30 +46,35 @@ class JDParser:
         doc = self.nlp(text)
         spacy_kws = []
         role = None
-        for ent in doc.ents:
-            if ent.label_ in ["ORG", "PRODUCT"]:
-                spacy_kws.append(ent.text.lower())
+        if hasattr(doc, "ents"):
+            for ent in doc.ents:
+                if ent.label_ in ["ORG", "PRODUCT"]:
+                    spacy_kws.append(ent.text.lower())
 
-        # Extract potential role from first line or title
+        # Clean role extraction: split on common separators (|, -, –, at)
         first_line = text.strip().split("\n")[0]
         if re.search(r"\b(engineer|developer|architect)\b", first_line, re.IGNORECASE):
-            role = first_line.strip()
+            parts = re.split(r"\s*(?:\||-|–|\bat\b)\s*", first_line, flags=re.IGNORECASE)
+            role = parts[0].strip()
 
         # 3. Regex for Seniority using word boundaries
         seniority = None
         text_lower = text.lower()
-        if re.search(r"\b(senior|sr\.|lead|principal)\b", text_lower):
+        if re.search(r"\b(principal)\b", text_lower):
+            seniority = "Principal"
+        elif re.search(r"\b(staff)\b", text_lower):
+            seniority = "Staff"
+        elif re.search(r"\b(senior|sr\.|lead)\b", text_lower):
             seniority = "Senior"
         elif re.search(r"\b(junior|jr\.|entry)\b", text_lower):
             seniority = "Junior"
-        elif re.search(r"\b(mid|staff)\b", text_lower):
-            seniority = "Mid/Senior"
 
         # 4. FastEmbed keyword extraction (candidate n-grams cosine vs full JD)
         embedding_kws = []
         if self.embedding_model:
             try:
-                words = list(set([token.text.lower() for token in doc if token.is_alpha and not token.is_stop and len(token.text) > 2]))
+                # Use sorted list of unique words to ensure deterministic output
+                words = sorted(list(set([token.text.lower() for token in doc if token.is_alpha and not token.is_stop and len(token.text) > 2])))
                 if words:
                     jd_emb = list(self.embedding_model.embed([text]))[0]
                     word_embs = list(self.embedding_model.embed(words[:50]))
@@ -77,7 +88,7 @@ class JDParser:
             except Exception:
                 pass
 
-        # Merge & deduplicate keywords
+        # Merge & deduplicate keywords deterministically
         combined = list(dict.fromkeys(yake_kws + spacy_kws + embedding_kws))
         
         # Filter extracted skills to remove non-skill noise

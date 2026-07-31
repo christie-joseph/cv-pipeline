@@ -11,10 +11,11 @@ from ..models.config import PipelineConfig
 
 
 class ScoredExperience:
-    def __init__(self, experience: Experience, score: float, best_title: str):
+    def __init__(self, experience: Experience, score: float, best_title: str, orig_index: int):
         self.experience = experience
         self.score = score
         self.best_title = best_title
+        self.orig_index = orig_index
 
 
 class ExperienceRanker:
@@ -36,7 +37,7 @@ class ExperienceRanker:
 
         # Prepare texts
         exp_texts = [
-            f"{e.company} {e.titles.default} {' '.join(e.tags)} " + " ".join([b.text for b in e.bullets])
+            f"{e.company} {e.titles.default} {' '.join(e.tags)} " + " ".join([b.text for b in e.bullets[:5]])
             for e in experiences
         ]
         jd_text = jd_profile.raw_text or " ".join(jd_profile.keywords)
@@ -53,11 +54,11 @@ class ExperienceRanker:
             tfidf_s = tfidf_scores[i]
             emb_s = emb_scores[i]
 
-            # 3. Skill Overlap Ratio
+            # 3. Skill Overlap Ratio (use filtered jd_skills only for denominator)
             exp_tags = {t.lower() for t in exp.tags + [t for b in exp.bullets for t in b.tags]}
-            jd_skills = {s.lower() for s in jd_profile.skills + jd_profile.keywords}
-            overlap_count = len(exp_tags.intersection(jd_skills))
-            skill_s = (overlap_count / max(1, len(jd_skills))) if jd_skills else 0.5
+            jd_skills_clean = {s.lower() for s in (jd_profile.skills or jd_profile.keywords)}
+            overlap_count = len(exp_tags.intersection(jd_skills_clean))
+            skill_s = (overlap_count / max(1, len(jd_skills_clean))) if jd_skills_clean else 0.5
 
             # 4. Importance Rating (1-10 mapped to 0.1-1.0)
             importance_s = min(1.0, max(0.1, exp.importance / 10.0))
@@ -81,29 +82,38 @@ class ExperienceRanker:
             # Select Best Title Variant
             best_title = self._select_best_title(exp, jd_profile)
 
-            scores.append(ScoredExperience(experience=exp, score=round(float(composite), 3), best_title=best_title))
+            scores.append(
+                ScoredExperience(
+                    experience=exp,
+                    score=round(float(composite), 3),
+                    best_title=best_title,
+                    orig_index=i
+                )
+            )
 
-        # Maintain timeline continuity: preserve source-of-truth chronological order
-        # Optional experiences can only be omitted from the tail (older experiences), never in-between.
-        selected = []
-        for i, s in enumerate(scores):
-            if len(selected) >= self.config.max_experiences:
+        # Preserve chronological timeline continuity
+        # Experiences are provided in chronological order (orig_index)
+        selected_in_chrono = []
+        for i in range(len(scores)):
+            s = scores[i]
+            if len(selected_in_chrono) >= self.config.max_experiences:
                 break
-            
-            # Check if any mandatory (non-optional) experience exists after this one
+
+            # Check if any non-optional mandatory job appears LATER in chronological order
             has_mandatory_after = any(not scores[j].experience.optional for j in range(i + 1, len(scores)))
-            
-            # Keep experience if: non-optional, or score >= threshold, or needed to prevent a gap before a mandatory job
+
             if not s.experience.optional or s.score >= self.config.minimum_similarity or has_mandatory_after:
-                selected.append(s)
+                selected_in_chrono.append(s)
             else:
-                # Optional, below threshold, and no mandatory experience follows -> safe to truncate timeline
                 break
 
-        if not selected:
-            selected = scores[: self.config.max_experiences]
+        if not selected_in_chrono:
+            # Fallback to top N by score if all filtered out
+            scores_by_val = sorted(scores, key=lambda x: x.score, reverse=True)
+            return scores_by_val[: self.config.max_experiences]
 
-        return selected
+        # Return experiences in source-of-truth chronological order
+        return selected_in_chrono
 
     def _compute_tfidf_scores(self, exp_texts: List[str], jd_text: str) -> List[float]:
         try:

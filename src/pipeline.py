@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 from .models.config import PipelineConfig
 from .models.experience import load_experiences_from_dir, SkillTaxonomy
-from .models.resume import TailoredResume, SelectedExperience, SelectedBullet, PipelineResult
+from .models.resume import TailoredResume, SelectedExperience, PipelineResult
 from .parser.jd_parser import JDParser
 from .ranker.experience_ranker import ExperienceRanker
 from .ranker.bullet_ranker import select_bullets_mmr

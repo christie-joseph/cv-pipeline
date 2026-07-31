@@ -52,6 +52,9 @@ class OllamaRewriter(BaseRewriter):
             return False
 
     def rewrite(self, bullet_text: str, jd_keywords: List[str], prompt_template: str) -> str:
+        if not self._checked:
+            self.is_available()
+
         if not self._available or not self.active_model:
             raise RuntimeError("Ollama local service is not available or has no installed models.")
 

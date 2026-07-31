@@ -6,7 +6,7 @@ from .base import BaseRewriter
 class RuleRewriter(BaseRewriter):
     """Deterministic rule-based rewriter. Never fails, 0 MB extra RAM.
     
-    Applies action verb strengthening, keyword front-loading, and metric preservation.
+    Applies action verb strengthening and metric preservation.
     """
 
     VERB_MAP = {
@@ -31,17 +31,7 @@ class RuleRewriter(BaseRewriter):
                 text = re.sub(weak_verb_pattern, strong_verb, text, flags=re.IGNORECASE, count=1)
                 break
 
-        # 2. Keyword Front-loading
-        # If a top JD keyword appears in the bullet text, highlight / front-load context if relevant
-        if jd_keywords:
-            text_lower = text.lower()
-            for kw in jd_keywords[:5]:
-                kw_clean = kw.strip().lower()
-                if len(kw_clean) > 3 and kw_clean in text_lower:
-                    # Keep original capitalization in text, ensure technology term prominence
-                    break
-
-        # 3. Ensure proper sentence termination
+        # 2. Ensure proper sentence termination
         text = text.strip()
         if not text.endswith("."):
             text += "."

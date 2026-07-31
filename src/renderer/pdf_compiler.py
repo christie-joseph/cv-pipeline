@@ -3,6 +3,7 @@ import subprocess
 import tempfile
 import shutil
 import logging
+import atexit
 from typing import Optional
 
 logger = logging.getLogger(__name__)
@@ -57,8 +58,9 @@ def open_pdf_in_viewer(pdf_bytes: bytes):
     if not pdf_bytes:
         return
 
-    # Use a named temporary file that gets auto-deleted or managed
     temp_dir = tempfile.mkdtemp()
+    atexit.register(shutil.rmtree, temp_dir, ignore_errors=True)
+
     temp_pdf_path = os.path.join(temp_dir, "resume.pdf")
 
     with open(temp_pdf_path, "wb") as f:
