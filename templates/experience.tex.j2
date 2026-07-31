@@ -1,0 +1,8 @@
+\noindent \textbf{ {{ exp.selected_title }} } \hfill \textbf{ {{ exp.experience.start }} -- {{ exp.experience.end }} } \\
+\textit{ {{ exp.experience.company }} } \\
+\vspace{-12pt}
+\begin{itemize}[leftmargin=*, noitemsep, topsep=2pt]
+{% for bullet in exp.selected_bullets %}
+    \item {{ bullet.rewritten_text }}
+{% endfor %}
+\end{itemize}

@@ -1,0 +1,17 @@
+Google - Senior Backend Software Engineer, Distributed Systems
+
+About the Role:
+We are looking for a Senior Backend Software Engineer to join our Core Distributed Systems team. In this role, you will design and build high-throughput, low-latency microservices and event streaming pipelines powering millions of queries per second.
+
+Key Responsibilities:
+- Architect scalable backend microservices using Java, Spring Boot, or C++.
+- Design fault-tolerant event streaming systems using Apache Kafka and distributed caching layer (Redis).
+- Optimize low-latency gRPC services and inter-service communication.
+- Collaborate with cloud infrastructure teams deploying microservices on Kubernetes (EKS / GKE).
+
+Qualifications & Skills:
+- 3+ years of experience building production backend systems.
+- Strong proficiency in Java, Spring Boot, C++, or Python.
+- Hands-on experience with Apache Kafka, Redis, gRPC, and Docker/Kubernetes.
+- Experience with AWS or Google Cloud Platform (GCP).
+- BS/MS in Computer Science or related technical field.

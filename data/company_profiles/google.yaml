@@ -1,0 +1,14 @@
+tag_boosts:
+  distributed-systems: 1.5
+  research: 1.3
+  scalability: 1.2
+  leadership: 0.8
+
+preferred_titles:
+  - "Software Engineer"
+  - "Backend Software Engineer"
+
+preferred_skills:
+  - "C++"
+  - "gRPC"
+  - "Java"

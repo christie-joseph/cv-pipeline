@@ -1,0 +1,34 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+
+\pagestyle{empty}
+\setlength{\tabcolsep}{0pt}
+
+\begin{document}
+
+\begin{center}
+    {\Huge \textbf{Candidate Name}} \\ \vspace{2pt}
+    \small email@example.com $|$ +1-123-456-7890 $|$ linkedin.com/in/candidate $|$ github.com/candidate
+\end{center}
+
+\vspace{-10pt}
+
+\section*{Professional Experience}
+\hrule
+\vspace{6pt}
+
+{% for exp in selected_experiences %}
+{% include "experience.tex.j2" %}
+\vspace{6pt}
+{% endfor %}
+
+\section*{Technical Skills}
+\hrule
+\vspace{6pt}
+
+{% include "skills.tex.j2" %}
+
+\end{document}

@@ -1,0 +1,45 @@
+skills:
+  - id: java
+    display: "Java"
+    aliases: ["java", "jdk", "openjdk", "java 17", "java 21"]
+    category: "Languages"
+  - id: python
+    display: "Python"
+    aliases: ["python", "python3", "fastapi"]
+    category: "Languages"
+  - id: cpp
+    display: "C++"
+    aliases: ["c++", "cpp", "cplusplus"]
+    category: "Languages"
+  - id: spring
+    display: "Spring Boot"
+    aliases: ["spring", "spring boot", "spring framework"]
+    category: "Frameworks"
+  - id: kafka
+    display: "Apache Kafka"
+    aliases: ["kafka", "confluent kafka", "event streaming", "pubsub"]
+    category: "Distributed Systems"
+  - id: aws
+    display: "AWS"
+    aliases: ["aws", "amazon web services", "ec2", "s3", "eks"]
+    category: "Cloud & Infrastructure"
+  - id: kubernetes
+    display: "Kubernetes"
+    aliases: ["kubernetes", "k8s", "eks", "gke"]
+    category: "Cloud & Infrastructure"
+  - id: docker
+    display: "Docker"
+    aliases: ["docker", "containerization", "containers"]
+    category: "Cloud & Infrastructure"
+  - id: postgresql
+    display: "PostgreSQL"
+    aliases: ["postgresql", "postgres", "psql"]
+    category: "Databases"
+  - id: redis
+    display: "Redis"
+    aliases: ["redis", "caching", "in-memory cache"]
+    category: "Databases"
+  - id: grpc
+    display: "gRPC"
+    aliases: ["grpc", "protobuf", "protocol buffers"]
+    category: "Distributed Systems"

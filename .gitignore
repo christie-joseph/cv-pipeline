@@ -1,0 +1,15 @@
+.env
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+*.pdf
+*.log
+*.aux
+*.out
+*.fls
+*.fdb_latexmk
+.vscode/
+.idea/
+*README.md
+*readme.md

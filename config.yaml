@@ -1,0 +1,42 @@
+# Pipeline Behavior
+max_experiences: 3
+max_bullets_per_experience: 3
+minimum_similarity: 0.25
+mmr_lambda: 0.7
+
+# Scoring Weights (must sum to 1.0)
+weights:
+  tfidf: 0.35
+  embedding: 0.30
+  skill_overlap: 0.20
+  importance: 0.10
+  company_boost: 0.05
+
+# Embedding Model (loaded via fastembed ONNX)
+embedding_model: "BAAI/bge-small-en-v1.5"
+
+# Rewriter Settings
+rewriter:
+  enabled: true
+  api_url: "https://generativelanguage.googleapis.com/v1beta/openai"
+  api_model: "gemini-2.5-flash"
+  ollama_model: "qwen2.5:1.5b"
+  timeout_seconds: 5
+
+# Rewriter Prompt Constraints
+rewriter_prompt: |
+  Rewrite only wording to align with job description keywords.
+  Do not add unverified facts.
+  Do not remove metrics or numbers.
+  Do not change technologies or specific tool names.
+  Keep changes subtle and professional.
+  Return exactly one sentence.
+
+# Output Settings
+output:
+  compile_pdf: true
+  open_pdf: true
+  show_ats_report: true
+  show_diff: true
+  show_manifest: true
+  copy_to_clipboard: false
