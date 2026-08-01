@@ -1,0 +1,9 @@
+education:
+  - institution: "Southwestern University"
+    location: "Georgetown, TX"
+    degree: "Bachelor of Arts in Computer Science, Minor in Business"
+    dates: "Aug. 2018 -- May 2021"
+  - institution: "Blinn College"
+    location: "Bryan, TX"
+    degree: "Associate's in Liberal Arts"
+    dates: "Aug. 2014 -- May 2018"

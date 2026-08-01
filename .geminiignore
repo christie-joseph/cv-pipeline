@@ -1,0 +1,8 @@
+# Environment Credentials & Private Keys
+.env
+.env.local
+.env.*
+
+# Personal Resume Data Overlay
+data/*/personal/
+data/personal/

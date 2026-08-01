@@ -41,7 +41,6 @@ class LatexRenderer:
         ]
         
         for char, sub in replacements:
-            # Replace character if not already escaped
             pattern = r"(?<!\\)" + re.escape(char)
             result = re.sub(pattern, sub, result)
             
@@ -50,6 +49,27 @@ class LatexRenderer:
     def render(self, resume: TailoredResume, template_name: str = "resume.tex.j2") -> str:
         template = self.env.get_template(template_name)
         
+        # 1. Contact Info
+        contact_data = {
+            "name": self.escape_latex(resume.contact_info.name),
+            "phone": self.escape_latex(resume.contact_info.phone),
+            "email": self.escape_latex(resume.contact_info.email),
+            "linkedin": self.escape_latex(resume.contact_info.linkedin),
+            "github": self.escape_latex(resume.contact_info.github),
+            "location": self.escape_latex(resume.contact_info.location),
+        }
+
+        # 2. Education Data
+        education_data = []
+        for edu in resume.education:
+            education_data.append({
+                "institution": self.escape_latex(edu.institution),
+                "location": self.escape_latex(edu.location),
+                "degree": self.escape_latex(edu.degree),
+                "dates": self.escape_latex(edu.dates),
+            })
+
+        # 3. Selected Experiences Data
         experiences_data = []
         for sel_exp in resume.selected_experiences:
             exp = sel_exp.experience
@@ -71,10 +91,25 @@ class LatexRenderer:
                 "selected_bullets": bullets_data
             })
 
+        # 4. Projects Data
+        projects_data = []
+        for proj in resume.projects:
+            escaped_stack = [self.escape_latex(t) for t in proj.tech_stack]
+            projects_data.append({
+                "title": self.escape_latex(proj.title),
+                "tech_stack_str": ", ".join(escaped_stack),
+                "dates": self.escape_latex(proj.dates),
+                "bullets": [self.escape_latex(b) for b in proj.bullets]
+            })
+
+        # 5. Skills Data
         skills_data = [self.escape_latex(s) for s in resume.selected_skills]
 
         rendered = template.render(
+            contact_info=contact_data,
+            education=education_data,
             selected_experiences=experiences_data,
+            projects=projects_data,
             selected_skills=skills_data
         )
         return rendered

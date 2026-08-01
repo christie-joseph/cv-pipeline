@@ -4,7 +4,7 @@
 .env.*.local
 
 # Personal Resume Data Overlay (Ignored in public repo)
-data/experiences/personal/
+data/*/personal/
 data/personal/
 
 # Python Cache & Build Artifacts
