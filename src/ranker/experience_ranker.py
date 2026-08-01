@@ -92,7 +92,7 @@ class ExperienceRanker:
                 )
             )
 
-        # Preserve chronological timeline continuity
+        # Preserve chronological timeline continuity filter
         selected_in_chrono = []
         for i in range(len(scores)):
             s = scores[i]
@@ -110,9 +110,27 @@ class ExperienceRanker:
         if not selected_in_chrono:
             # Fallback to top N by score if all filtered out
             scores_by_val = sorted(scores, key=lambda x: x.score, reverse=True)
-            return scores_by_val[: self.config.max_experiences]
+            selected_in_chrono = scores_by_val[: self.config.max_experiences]
 
-        # Return experiences in source-of-truth chronological order
+        # Re-sort selected experiences in reverse-chronological order
+        # "Present" / "present" is treated as the most recent (sorts after any year)
+        def _sort_key(s: ScoredExperience) -> tuple:
+            end = s.experience.end.strip().lower()
+            if end in ("present", "current", "now", "ongoing"):
+                return (9999, s.experience.start)
+            try:
+                return (int(end), s.experience.start)
+            except ValueError:
+                # Handle dates like "Dec 2025" — extract year
+                parts = end.split()
+                for part in reversed(parts):
+                    try:
+                        return (int(part), s.experience.start)
+                    except ValueError:
+                        continue
+                return (0, s.experience.start)
+
+        selected_in_chrono.sort(key=_sort_key, reverse=True)
         return selected_in_chrono
 
     def _compute_tfidf_scores(self, exp_texts: List[str], jd_text: str) -> List[float]:

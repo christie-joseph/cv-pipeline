@@ -44,4 +44,7 @@ def test_latex_renderer():
     assert "2022" in latex_str  # Extracted graduation year
     assert "\\resumeSubheading" in latex_str
     assert "Backend Software Engineer" in latex_str
+    assert "Languages" in latex_str
+    assert "Frameworks" in latex_str
+    assert "Tools \\& Databases" in latex_str
     assert "\\&" in latex_str  # Escaped ampersand

@@ -1,14 +1,15 @@
 import re
 import jinja2
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List, Dict
 from ..models.resume import TailoredResume
+from ..models.experience import SkillTaxonomy
 
 
 class LatexRenderer:
     def __init__(self, template_dir: Optional[str] = None):
+        project_root = Path(__file__).resolve().parent.parent.parent
         if not template_dir:
-            project_root = Path(__file__).resolve().parent.parent.parent
             template_dir = str(project_root / "templates")
             
         self.template_dir = template_dir
@@ -18,6 +19,7 @@ class LatexRenderer:
             trim_blocks=True,
             lstrip_blocks=True
         )
+        self.taxonomy = SkillTaxonomy.load_from_yaml(str(project_root / "data" / "skills.yaml"))
 
     def escape_latex(self, text: str) -> str:
         """Escapes LaTeX special characters in strict deterministic order."""
@@ -122,8 +124,37 @@ class LatexRenderer:
                 "bullets": [self.escape_latex(b) for b in proj.bullets]
             })
 
-        # 5. Skills Data
-        skills_data = [self.escape_latex(s) for s in resume.selected_skills]
+        # 5. Categorize Skills (Languages, Frameworks, Tools & Databases)
+        languages: List[str] = []
+        frameworks: List[str] = []
+        tools_databases: List[str] = []
+
+        # Map display name to category
+        skill_categories: Dict[str, str] = {}
+        for s in self.taxonomy.skills:
+            skill_categories[s.display.lower()] = s.category or "Tools & Databases"
+            for alias in s.aliases:
+                skill_categories[alias.lower()] = s.category or "Tools & Databases"
+
+        for skill in resume.selected_skills:
+            skill_lower = skill.lower()
+            cat = skill_categories.get(skill_lower, "Tools & Databases")
+            
+            escaped_skill = self.escape_latex(skill)
+            if cat == "Languages":
+                languages.append(escaped_skill)
+            elif cat == "Frameworks":
+                frameworks.append(escaped_skill)
+            else:
+                tools_databases.append(escaped_skill)
+
+        # Ensure mandatory sections are never empty by falling back to curated defaults if none matched
+        if not languages:
+            languages = [self.escape_latex(s) for s in ["C#", "SQL", "Python", "Java", "C++", "JavaScript", "TypeScript"]]
+        if not frameworks:
+            frameworks = [self.escape_latex(s) for s in ["ASP.NET Core", "Blazor", "Entity Framework", "Spring Boot"]]
+        if not tools_databases:
+            tools_databases = [self.escape_latex(s) for s in ["Docker", "Kubernetes", "Azure", "AWS", "Git", "GitHub Actions"]]
 
         rendered = template.render(
             contact_info=contact_data,
@@ -131,6 +162,8 @@ class LatexRenderer:
             education=education_data,
             selected_experiences=experiences_data,
             projects=projects_data,
-            selected_skills=skills_data
+            languages=", ".join(languages),
+            frameworks=", ".join(frameworks),
+            tools_databases=", ".join(tools_databases)
         )
         return rendered
