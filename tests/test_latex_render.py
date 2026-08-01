@@ -22,7 +22,7 @@ def test_latex_renderer():
 
     resume = TailoredResume(
         contact_info=ContactInfo(name="Jake Ryan", email="jake@su.edu", phone="123-456-7890"),
-        education=[EducationItem(institution="University of Birmingham", location="UK", degree="MSc Computer Science", dates="2022")],
+        education=[EducationItem(institution="University of Birmingham", location="UK", degree="MSc Computer Science", dates="Sept 2021 -- Sept 2022")],
         projects=[ProjectItem(id="p1", title="Gitlytics", tech_stack=["Python", "React"], dates="2020", bullets=["Built dashboard."])],
         selected_experiences=[
             SelectedExperience(
@@ -33,12 +33,15 @@ def test_latex_renderer():
                 ]
             )
         ],
-        selected_skills=["Java", "C++", "AWS"]
+        selected_skills=["Java", "C++", "AWS"],
+        metadata={"target_role": "Backend Engineer"}
     )
 
     latex_str = renderer.render(resume)
     assert "\\begin{document}" in latex_str
     assert "Jake Ryan" in latex_str
+    assert "Backend Engineer" in latex_str
+    assert "2022" in latex_str  # Extracted graduation year
     assert "\\resumeSubheading" in latex_str
     assert "Backend Software Engineer" in latex_str
     assert "\\&" in latex_str  # Escaped ampersand
