@@ -1,10 +1,14 @@
+from pathlib import Path
 from src.models.experience import Experience, TitleConfig, Bullet
 from src.models.resume import TailoredResume, SelectedExperience, SelectedBullet
 from src.renderer.latex_renderer import LatexRenderer
 
+project_root = Path(__file__).resolve().parent.parent
+
 
 def test_latex_renderer():
-    renderer = LatexRenderer(template_dir="templates")
+    template_dir = str(project_root / "templates")
+    renderer = LatexRenderer(template_dir=template_dir)
 
     exp = Experience(
         id="amazon",

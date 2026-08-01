@@ -47,7 +47,8 @@ class SkillMatcher:
         missing: List[str] = []
         seen_matched: Set[str] = set()
 
-        resume_tags_lower = {t.lower() for t in resume_tags}
+        # Filter out empty or whitespace-only tags to prevent zero-length regex false positives
+        resume_tags_lower = {t.lower().strip() for t in resume_tags if t and len(t.strip()) > 0}
 
         for jd_skill in jd_skills:
             jd_skill_lower = jd_skill.lower()

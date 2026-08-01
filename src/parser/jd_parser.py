@@ -51,11 +51,12 @@ class JDParser:
                 if ent.label_ in ["ORG", "PRODUCT"]:
                     spacy_kws.append(ent.text.lower())
 
-        # Clean role extraction: split on common separators (|, -, –, at)
+        # Clean role extraction: split on common separators (|, -, –, at) and strip punctuation
         first_line = text.strip().split("\n")[0]
         if re.search(r"\b(engineer|developer|architect)\b", first_line, re.IGNORECASE):
             parts = re.split(r"\s*(?:\||-|–|\bat\b)\s*", first_line, flags=re.IGNORECASE)
-            role = parts[0].strip()
+            raw_role = parts[0].strip()
+            role = re.sub(r"[^\w\s]", "", raw_role).strip()
 
         # 3. Regex for Seniority using word boundaries
         seniority = None
@@ -73,8 +74,9 @@ class JDParser:
         embedding_kws = []
         if self.embedding_model:
             try:
-                # Use sorted list of unique words to ensure deterministic output
-                words = sorted(list(set([token.text.lower() for token in doc if token.is_alpha and not token.is_stop and len(token.text) > 2])))
+                # Retain document order (not alphabetical) using dict.fromkeys to avoid keyphrase truncation
+                raw_words = [token.text.lower() for token in doc if token.is_alpha and not token.is_stop and len(token.text) > 2]
+                words = list(dict.fromkeys(raw_words))
                 if words:
                     jd_emb = list(self.embedding_model.embed([text]))[0]
                     word_embs = list(self.embedding_model.embed(words[:50]))

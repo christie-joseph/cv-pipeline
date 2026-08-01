@@ -1,4 +1,3 @@
-import os
 import re
 import jinja2
 from pathlib import Path
@@ -21,18 +20,31 @@ class LatexRenderer:
         )
 
     def escape_latex(self, text: str) -> str:
-        """Escapes LaTeX special characters while avoiding double-escaping."""
+        """Escapes LaTeX special characters in strict deterministic order."""
         if not text:
             return ""
         
-        result = text
-        result = re.sub(r'(?<!\\)&', r'\&', result)
-        result = re.sub(r'(?<!\\)%', r'\%', result)
-        result = re.sub(r'(?<!\\)\$', r'\$', result)
-        result = re.sub(r'(?<!\\)#', r'\#', result)
-        result = re.sub(r'(?<!\\)_', r'\_', result)
-        result = re.sub(r'(?<!\\)\{', r'\{', result)
-        result = re.sub(r'(?<!\\)\}', r'\}', result)
+        # 1. First escape backslashes to prevent double-escaping downstream
+        result = text.replace("\\", r"\textbackslash{}")
+        
+        # 2. Escape special characters
+        replacements = [
+            ("&", r"\&"),
+            ("%", r"\%"),
+            ("$", r"\$"),
+            ("#", r"\#"),
+            ("_", r"\_"),
+            ("{", r"\{"),
+            ("}", r"\}"),
+            ("~", r"\textasciitilde{}"),
+            ("^", r"\textasciicircum{}"),
+        ]
+        
+        for char, sub in replacements:
+            # Replace character if not already escaped
+            pattern = r"(?<!\\)" + re.escape(char)
+            result = re.sub(pattern, sub, result)
+            
         return result
 
     def render(self, resume: TailoredResume, template_name: str = "resume.tex.j2") -> str:

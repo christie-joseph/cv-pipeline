@@ -31,14 +31,8 @@ def select_bullets_mmr(
                 for b_emb in bullet_embs
             ]
 
-            n = len(bullets)
-            sim_matrix = np.zeros((n, n))
-            for i in range(n):
-                for j in range(n):
-                    sim_matrix[i, j] = float(
-                        np.dot(bullet_embs[i], bullet_embs[j]) /
-                        (np.linalg.norm(bullet_embs[i]) * np.linalg.norm(bullet_embs[j]) + 1e-9)
-                    )
+            # Vectorized pairwise similarity matrix computation
+            sim_matrix = cosine_similarity(bullet_embs, bullet_embs)
         except Exception:
             relevance_scores, sim_matrix = _tfidf_scores(bullet_texts, jd_text)
     else:
@@ -109,4 +103,4 @@ def _tfidf_scores(bullet_texts: List[str], jd_text: str):
         return list(relevance_scores), sim_matrix
     except Exception:
         n = len(bullet_texts)
-        return [0.5] * n, np.zeros((n, n))
+        return [0.0] * n, np.zeros((n, n))

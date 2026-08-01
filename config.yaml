@@ -15,13 +15,54 @@ weights:
 # Embedding Model (loaded via fastembed ONNX)
 embedding_model: "BAAI/bge-small-en-v1.5"
 
-# Rewriter Settings
+# Rewriter Settings (Multi-Provider Stack with Priority Sorting)
 rewriter:
   enabled: true
-  api_url: "https://generativelanguage.googleapis.com/v1beta/openai"
-  api_model: "gemini-2.5-flash"
   ollama_model: "qwen2.5:1.5b"
-  timeout_seconds: 5
+  ollama_timeout: 30
+
+  # Stacked Cloud API Providers (Tried in order of priority: 1st OpenRouter -> 2nd Gemini -> 3rd Cerebras -> 4th Groq)
+  # Lower priority number = higher priority. You can also define custom providers or set CUSTOM_API_KEY in .env.
+  providers:
+    - name: "openrouter"
+      api_url: "https://openrouter.ai/api/v1"
+      api_model: "meta-llama/llama-3.3-70b-instruct:free"
+      api_key_env: "OPENROUTER_API_KEY"
+      timeout_seconds: 10
+      max_tokens: 100
+      temperature: 0.3
+      priority: 1
+      enabled: true
+
+    - name: "gemini"
+      api_url: "https://generativelanguage.googleapis.com/v1beta/openai"
+      api_model: "gemini-2.5-flash"
+      api_key_env: "GEMINI_API_KEY"
+      timeout_seconds: 10
+      max_tokens: 100
+      temperature: 0.3
+      priority: 2
+      enabled: true
+
+    - name: "cerebras"
+      api_url: "https://api.cerebras.ai/v1"
+      api_model: "llama3.1-8b"
+      api_key_env: "CEREBRAS_API_KEY"
+      timeout_seconds: 8
+      max_tokens: 100
+      temperature: 0.3
+      priority: 3
+      enabled: true
+
+    - name: "groq"
+      api_url: "https://api.groq.com/openai/v1"
+      api_model: "llama-3.3-70b-versatile"
+      api_key_env: "GROQ_API_KEY"
+      timeout_seconds: 5
+      max_tokens: 100
+      temperature: 0.3
+      priority: 4
+      enabled: true
 
 # Rewriter Prompt Constraints
 rewriter_prompt: |

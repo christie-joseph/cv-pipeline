@@ -13,17 +13,15 @@ class RewriterChain:
         self.config = config
         self.rewriter_cfg = config.rewriter
 
-        # Option A: Cloud LLM API (OpenAI-compatible)
+        # Option A: Stacked Cloud LLM API Pool (Gemini, Groq, OpenRouter, Cerebras)
         self.option_a = ApiRewriter(
-            api_url=self.rewriter_cfg.api_url,
-            api_model=self.rewriter_cfg.api_model,
-            timeout_seconds=self.rewriter_cfg.timeout_seconds
+            providers=self.rewriter_cfg.providers
         )
 
-        # Option B: Local Ollama GPU
+        # Option B: Local Ollama GPU/CPU
         self.option_b = OllamaRewriter(
             model_name=self.rewriter_cfg.ollama_model,
-            timeout_seconds=self.rewriter_cfg.timeout_seconds
+            timeout_seconds=self.rewriter_cfg.ollama_timeout
         )
 
         # Option C: Rule-Based Fallback (Guaranteed)
@@ -36,21 +34,21 @@ class RewriterChain:
 
         prompt = self.config.rewriter_prompt
 
-        # Tier A: Cloud LLM API
+        # Tier A: Cloud LLM API Pool
         if self.option_a.is_available():
             try:
-                res = self.option_a.rewrite(bullet_text, jd_keywords, prompt)
-                return res, "Option A (Cloud API)"
+                res, provider_name = self.option_a.rewrite(bullet_text, jd_keywords, prompt)
+                return res, f"Option A (Cloud API: {provider_name})"
             except Exception as e:
-                logger.warning(f"Option A (Cloud API) failed: {e}. Falling back to Option B...")
+                logger.warning(f"Option A Cloud API pool failed: {e}. Falling back to Option B...")
 
-        # Tier B: Local Ollama GPU
+        # Tier B: Local Ollama GPU/CPU
         if self.option_b.is_available():
             try:
                 res = self.option_b.rewrite(bullet_text, jd_keywords, prompt)
                 return res, "Option B (Local Ollama GPU)"
             except Exception as e:
-                logger.warning(f"Option B (Ollama GPU) failed: {e}. Falling back to Option C...")
+                logger.warning(f"Option B (Ollama) failed: {e}. Falling back to Option C...")
 
         # Tier C: Deterministic Rule Engine
         res = self.option_c.rewrite(bullet_text, jd_keywords, prompt)

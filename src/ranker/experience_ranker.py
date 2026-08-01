@@ -1,4 +1,5 @@
 import os
+import re
 import yaml
 import numpy as np
 from pathlib import Path
@@ -92,7 +93,6 @@ class ExperienceRanker:
             )
 
         # Preserve chronological timeline continuity
-        # Experiences are provided in chronological order (orig_index)
         selected_in_chrono = []
         for i in range(len(scores)):
             s = scores[i]
@@ -123,7 +123,7 @@ class ExperienceRanker:
             sims = cosine_similarity(matrix[1:], matrix[0]).flatten()
             return [float(s) for s in sims]
         except Exception:
-            return [0.5] * len(exp_texts)
+            return [0.0] * len(exp_texts)
 
     def _compute_embedding_scores(self, exp_texts: List[str], jd_text: str) -> List[float]:
         if not self.embedding_model:
@@ -137,20 +137,20 @@ class ExperienceRanker:
             ]
             return sims
         except Exception:
-            return [0.5] * len(exp_texts)
+            return [0.0] * len(exp_texts)
 
     def _select_best_title(self, exp: Experience, jd_profile: JDProfile) -> str:
         all_variants = [exp.titles.default] + exp.titles.variants
         if not all_variants or not jd_profile.role:
             return exp.titles.default
 
-        jd_role = jd_profile.role.lower()
+        jd_role_clean = jd_profile.role.lower()
         best_title = exp.titles.default
         best_score = -1.0
 
         for title in all_variants:
-            title_words = set(title.lower().split())
-            role_words = set(jd_role.split())
+            title_words = set(re.findall(r"\w+", title.lower()))
+            role_words = set(re.findall(r"\w+", jd_role_clean))
             intersection = len(title_words.intersection(role_words))
             if intersection > best_score:
                 best_score = intersection
