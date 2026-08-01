@@ -53,10 +53,14 @@ class JDParser:
 
         # Clean role extraction: split on common separators (|, -, –, at) and strip punctuation
         first_line = text.strip().split("\n")[0]
-        if re.search(r"\b(engineer|developer|architect)\b", first_line, re.IGNORECASE):
+        if re.search(r"\b(engineer|developer|architect|lead|analyst)\b", first_line, re.IGNORECASE):
             parts = re.split(r"\s*(?:\||-|–|\bat\b)\s*", first_line, flags=re.IGNORECASE)
-            raw_role = parts[0].strip()
-            role = re.sub(r"[^\w\s]", "", raw_role).strip()
+            role_part = parts[0]
+            for part in parts:
+                if re.search(r"\b(engineer|developer|architect|lead|analyst)\b", part, re.IGNORECASE):
+                    role_part = part
+                    break
+            role = re.sub(r"[^\w\s,]", "", role_part).strip()
 
         # 3. Regex for Seniority using word boundaries
         seniority = None
