@@ -95,12 +95,9 @@
 
 %----------HEADING----------
 \begin{center}
-    \textbf{\Huge \scshape {{ contact_info.name }}} \\ \vspace{1pt}
-    \small 
-    {% if contact_info.phone %}{{ contact_info.phone }}{% endif %}
-    {% if contact_info.email %}{% if contact_info.phone %} $|$ {% endif %}\href{mailto:{{ contact_info.email }}}{\underline{ {{ contact_info.email }} }}{% endif %}
-    {% if contact_info.linkedin %}{% if contact_info.email or contact_info.phone %} $|$ {% endif %}\href{https://{{ contact_info.linkedin }}}{\underline{ {{ contact_info.linkedin }} }}{% endif %}
-    {% if contact_info.github %}{% if contact_info.linkedin or contact_info.email or contact_info.phone %} $|$ {% endif %}\href{https://{{ contact_info.github }}}{\underline{ {{ contact_info.github }} }}{% endif %}
+    \textbf{\Huge \scshape {{ contact_info.name }}} \\ \vspace{2pt}
+    {% if target_role %}{\large \textit{ {{ target_role }} }} \\ \vspace{2pt}{% endif %}
+    \small {{ contact_info.contact_line }}
 \end{center}
 
 %-----------EDUCATION-----------
@@ -138,7 +135,7 @@
     \resumeSubHeadingListStart
       {% for proj in projects %}
       \resumeProjectHeading
-          {\textbf{ {{ proj.title }} } $|$ \emph{ {{ proj.tech_stack_str }} }}{ {{ proj.dates }} }
+          {\textbf{ {{ proj.title }} } $|$ \emph{ {{ proj.tech_stack_str }} }}{}
           \resumeItemListStart
             {% for b in proj.bullets %}
             \resumeItem{ {{ b }} }

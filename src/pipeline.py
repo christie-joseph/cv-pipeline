@@ -124,6 +124,9 @@ class Pipeline:
         if not selected_skills:
             selected_skills = list(dict.fromkeys([t.title() for t in all_resume_tags[:8]]))
 
+        # Target Role from JD or default
+        target_role = jd_profile.role or "Software Engineer"
+
         # 6. Assemble Tailored Resume Object (In-Memory)
         tailored_resume = TailoredResume(
             contact_info=contact_info,
@@ -131,7 +134,7 @@ class Pipeline:
             selected_experiences=selected_experiences,
             projects=projects,
             selected_skills=selected_skills,
-            metadata={"rewriter_tier": overall_rewriter_tier}
+            metadata={"rewriter_tier": overall_rewriter_tier, "target_role": target_role}
         )
 
         # 7. Render LaTeX
