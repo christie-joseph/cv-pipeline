@@ -1,15 +1,26 @@
+# Secret Environment Files & Credentials
 .env
+.env.local
+.env.*.local
+
+# Personal Resume Data Overlay (Ignored in public repo)
+data/experiences/personal/
+data/personal/
+
+# Python Cache & Build Artifacts
 __pycache__/
 *.pyc
 *.pyo
 .pytest_cache/
+
+# Compiled PDFs & TeX Output Artifacts
 *.pdf
 *.log
 *.aux
 *.out
 *.fls
 *.fdb_latexmk
+
+# IDE Settings
 .vscode/
 .idea/
-*README.md
-*readme.md

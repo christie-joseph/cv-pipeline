@@ -39,16 +39,31 @@ class Experience(BaseModel):
 
 
 def load_experiences_from_dir(dir_path: Optional[str] = None) -> List[Experience]:
+    """Loads experience YAML files. If data/experiences/personal/ exists and has files, loads personal data."""
     if not dir_path:
         project_root = Path(__file__).resolve().parent.parent.parent
         dir_path = str(project_root / "data" / "experiences")
 
-    experiences = []
     if not os.path.exists(dir_path):
         return []
 
-    yaml_files = glob.glob(os.path.join(dir_path, "*.yaml")) + glob.glob(os.path.join(dir_path, "*.yml"))
-    for file_path in sorted(yaml_files):
+    # Check for git-ignored personal directory overlay
+    personal_dir = os.path.join(dir_path, "personal")
+    personal_files = []
+    if os.path.exists(personal_dir):
+        personal_files = glob.glob(os.path.join(personal_dir, "*.yaml")) + glob.glob(os.path.join(personal_dir, "*.yml"))
+
+    # If personal files exist, load from personal_dir; otherwise load top-level sample files
+    if personal_files:
+        target_files = sorted(personal_files)
+    else:
+        target_files = sorted(
+            [f for f in glob.glob(os.path.join(dir_path, "*.yaml")) + glob.glob(os.path.join(dir_path, "*.yml"))
+             if os.path.isfile(f)]
+        )
+
+    experiences = []
+    for file_path in target_files:
         with open(file_path, "r", encoding="utf-8") as f:
             data = yaml.safe_load(f)
             if data:
