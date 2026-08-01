@@ -1,0 +1,17 @@
+projects:
+  - id: "gitlytics"
+    title: "Gitlytics"
+    tech_stack: ["Python", "Flask", "React", "PostgreSQL", "Docker"]
+    dates: "June 2020 -- Present"
+    bullets:
+      - "Developed a full-stack web application using Flask serving a REST API with React as the frontend."
+      - "Implemented GitHub OAuth to retrieve data from user repositories and visualize collaboration."
+      - "Used Celery and Redis for asynchronous background tasks."
+
+  - id: "simple_paintball"
+    title: "Simple Paintball"
+    tech_stack: ["Spigot API", "Java", "Maven", "TravisCI", "Git"]
+    dates: "May 2018 -- May 2020"
+    bullets:
+      - "Developed a Minecraft server plugin published to websites gaining 2K+ downloads."
+      - "Implemented continuous delivery using TravisCI to build the plugin upon new releases."

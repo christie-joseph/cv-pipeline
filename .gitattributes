@@ -1,4 +1,4 @@
 # Preserve private repository overrides when merging public logic updates
 .env merge=ours
 config.yaml merge=ours
-data/experiences/personal/** merge=ours
+data/*/personal/** merge=ours

@@ -4,5 +4,5 @@
 .env.*
 
 # Personal Resume Data Overlay
-data/experiences/personal/
+data/*/personal/
 data/personal/

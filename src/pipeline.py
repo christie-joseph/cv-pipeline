@@ -4,7 +4,10 @@ from dotenv import load_dotenv
 
 from .models.config import PipelineConfig
 from .models.experience import load_experiences_from_dir, SkillTaxonomy
-from .models.resume import TailoredResume, SelectedExperience, PipelineResult
+from .models.resume import (
+    TailoredResume, SelectedExperience, PipelineResult,
+    load_contact_info, load_education, load_projects
+)
 from .parser.jd_parser import JDParser
 from .ranker.experience_ranker import ExperienceRanker
 from .ranker.bullet_ranker import select_bullets_mmr
@@ -47,6 +50,10 @@ class Pipeline:
         all_experiences = load_experiences_from_dir()
         if not all_experiences:
             raise ValueError("No experience YAML files found in data/experiences/")
+
+        contact_info = load_contact_info()
+        education = load_education()
+        projects = load_projects()
 
         # 2. Parse JD
         jd_profile = self.parser.parse(jd_text)
@@ -119,7 +126,10 @@ class Pipeline:
 
         # 6. Assemble Tailored Resume Object (In-Memory)
         tailored_resume = TailoredResume(
+            contact_info=contact_info,
+            education=education,
             selected_experiences=selected_experiences,
+            projects=projects,
             selected_skills=selected_skills,
             metadata={"rewriter_tier": overall_rewriter_tier}
         )

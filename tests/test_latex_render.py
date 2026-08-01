@@ -1,6 +1,6 @@
 from pathlib import Path
 from src.models.experience import Experience, TitleConfig, Bullet
-from src.models.resume import TailoredResume, SelectedExperience, SelectedBullet
+from src.models.resume import TailoredResume, SelectedExperience, SelectedBullet, ContactInfo, EducationItem, ProjectItem
 from src.renderer.latex_renderer import LatexRenderer
 
 project_root = Path(__file__).resolve().parent.parent
@@ -21,6 +21,9 @@ def test_latex_renderer():
     )
 
     resume = TailoredResume(
+        contact_info=ContactInfo(name="Jake Ryan", email="jake@su.edu", phone="123-456-7890"),
+        education=[EducationItem(institution="University of Birmingham", location="UK", degree="MSc Computer Science", dates="2022")],
+        projects=[ProjectItem(id="p1", title="Gitlytics", tech_stack=["Python", "React"], dates="2020", bullets=["Built dashboard."])],
         selected_experiences=[
             SelectedExperience(
                 experience=exp,
@@ -35,5 +38,7 @@ def test_latex_renderer():
 
     latex_str = renderer.render(resume)
     assert "\\begin{document}" in latex_str
+    assert "Jake Ryan" in latex_str
+    assert "\\resumeSubheading" in latex_str
     assert "Backend Software Engineer" in latex_str
     assert "\\&" in latex_str  # Escaped ampersand
