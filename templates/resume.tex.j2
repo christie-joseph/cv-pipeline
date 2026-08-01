@@ -18,6 +18,7 @@
 \usepackage{fancyhdr}
 \usepackage[english]{babel}
 \usepackage{tabularx}
+\usepackage[letterpaper,margin=0.5in]{geometry}
 \input{glyphtounicode}
 
 \pagestyle{fancy}
@@ -25,13 +26,6 @@
 \fancyfoot{}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
-
-% Adjust margins
-\addtolength{\oddsidemargin}{-0.5in}
-\addtolength{\evensidemargin}{-0.5in}
-\addtolength{\textwidth}{1in}
-\addtolength{\topmargin}{-.5in}
-\addtolength{\textheight}{1.0in}
 
 \urlstyle{same}
 
@@ -118,8 +112,8 @@
   \resumeSubHeadingListStart
     {% for sel_exp in selected_experiences %}
     \resumeSubheading
-      { {{ sel_exp.selected_title }} }{ {{ sel_exp.experience.start }} -- {{ sel_exp.experience.end }} }
-      { {{ sel_exp.experience.company }} }{}
+      { {{ sel_exp.experience.company }} }{ {{ sel_exp.experience.start }} -- {{ sel_exp.experience.end }} }
+      { {{ sel_exp.selected_title }} }{}
       \resumeItemListStart
         {% for b in sel_exp.selected_bullets %}
         \resumeItem{ {{ b.rewritten_text }} }
@@ -146,14 +140,14 @@
 {% endif %}
 
 %-----------TECHNICAL SKILLS-----------
-{% if selected_skills %}
 \section{Technical Skills}
  \begin{itemize}[leftmargin=0.15in, label={}]
     \small{\item{
-     \textbf{Skills}{: {{ selected_skills | join(', ') }}}
+     \textbf{Languages}{: {{ languages }}} \\
+     \textbf{Frameworks}{: {{ frameworks }}} \\
+     \textbf{Tools \& Databases}{: {{ tools_databases }}}
     }}
  \end{itemize}
-{% endif %}
 
 %-------------------------------------------
 \end{document}
