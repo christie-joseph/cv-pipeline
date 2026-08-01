@@ -1,7 +1,16 @@
 skills:
+  # Languages
+  - id: csharp
+    display: "C#"
+    aliases: ["c#", "csharp", ".net", "dotnet"]
+    category: "Languages"
   - id: java
     display: "Java"
     aliases: ["java", "jdk", "openjdk", "java 17", "java 21"]
+    category: "Languages"
+  - id: sql
+    display: "SQL"
+    aliases: ["sql", "tsql", "t-sql", "relational database", "raw sql"]
     category: "Languages"
   - id: python
     display: "Python"
@@ -11,35 +20,95 @@ skills:
     display: "C++"
     aliases: ["c++", "cpp", "cplusplus"]
     category: "Languages"
-  - id: spring
-    display: "Spring Boot"
-    aliases: ["spring", "spring boot", "spring framework"]
+  - id: javascript_typescript
+    display: "JavaScript / TypeScript"
+    aliases: ["javascript", "typescript", "js", "ts", "node.js"]
+    category: "Languages"
+  - id: html_css
+    display: "HTML / CSS"
+    aliases: ["html", "css", "html5", "css3"]
+    category: "Languages"
+
+  # Tools & Frameworks
+  - id: aspnet_core
+    display: "ASP.NET Core"
+    aliases: ["asp.net core", ".net core", "asp.net", "dotnet core"]
     category: "Frameworks"
-  - id: kafka
-    display: "Apache Kafka"
-    aliases: ["kafka", "confluent kafka", "event streaming", "pubsub"]
-    category: "Distributed Systems"
-  - id: aws
-    display: "AWS"
-    aliases: ["aws", "amazon web services", "ec2", "s3", "eks"]
-    category: "Cloud & Infrastructure"
-  - id: kubernetes
-    display: "Kubernetes"
-    aliases: ["kubernetes", "k8s", "eks", "gke"]
-    category: "Cloud & Infrastructure"
   - id: docker
     display: "Docker"
     aliases: ["docker", "containerization", "containers"]
     category: "Cloud & Infrastructure"
+  - id: blazor
+    display: "Blazor"
+    aliases: ["blazor", "blazor webassembly", "blazor server"]
+    category: "Frameworks"
+  - id: entity_framework
+    display: "Entity Framework"
+    aliases: ["entity framework", "ef core", "ef", "orm"]
+    category: "Frameworks"
+  - id: rest_api
+    display: "RESTful APIs"
+    aliases: ["restful apis", "rest api", "rest", "web api", "oauth"]
+    category: "Frameworks"
+  - id: azure_devops
+    display: "Azure DevOps"
+    aliases: ["azure devops", "vsts", "tfs"]
+    category: "DevOps & CI/CD"
+  - id: github_actions
+    display: "GitHub Actions"
+    aliases: ["github actions", "ci/cd", "continuous integration"]
+    category: "DevOps & CI/CD"
+
+  # Databases
+  - id: ms_sql
+    display: "MS SQL Server"
+    aliases: ["ms sql", "microsoft sql server", "sql server", "t-sql"]
+    category: "Databases"
+  - id: bigquery
+    display: "BigQuery"
+    aliases: ["bigquery", "google bigquery"]
+    category: "Databases"
   - id: postgresql
     display: "PostgreSQL"
     aliases: ["postgresql", "postgres", "psql"]
+    category: "Databases"
+  - id: firestore_firebase
+    display: "Firestore / Firebase"
+    aliases: ["firestore", "firebase", "google firestore"]
     category: "Databases"
   - id: redis
     display: "Redis"
     aliases: ["redis", "caching", "in-memory cache"]
     category: "Databases"
-  - id: grpc
-    display: "gRPC"
-    aliases: ["grpc", "protobuf", "protocol buffers"]
+
+  # Cloud Services
+  - id: azure
+    display: "Azure"
+    aliases: ["azure", "microsoft azure", "service bus", "serverless"]
+    category: "Cloud & Infrastructure"
+  - id: aws
+    display: "AWS"
+    aliases: ["aws", "amazon web services", "ec2", "s3", "eks"]
+    category: "Cloud & Infrastructure"
+  - id: digitalocean
+    display: "DigitalOcean"
+    aliases: ["digitalocean", "droplets"]
+    category: "Cloud & Infrastructure"
+  - id: kubernetes
+    display: "Kubernetes"
+    aliases: ["kubernetes", "k8s", "eks", "aks"]
+    category: "Cloud & Infrastructure"
+
+  # Distributed Systems & Messaging
+  - id: kafka
+    display: "Apache Kafka"
+    aliases: ["kafka", "confluent kafka", "event streaming", "pubsub", "message queues"]
     category: "Distributed Systems"
+  - id: iam_security
+    display: "IAM & Security"
+    aliases: ["iam", "identity and access management", "oauth", "tls", "security"]
+    category: "Security"
+  - id: iac
+    display: "Infrastructure as Code (IaC)"
+    aliases: ["infrastructure as code", "iac", "terraform", "bicep", "arm"]
+    category: "Cloud & Infrastructure"
