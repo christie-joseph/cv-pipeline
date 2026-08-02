@@ -65,7 +65,143 @@ git checkout private
 git merge public
 ```
 
-*(The included `.gitattributes` configuration automatically enforces `merge=ours` for `.env` and personal data, ensuring git merges **never overwrite your API keys or resume info**).*
+---
+
+## 📁 Complete Personalization Map (Where to Update Your Information)
+
+To personalize this solution completely for your own career applications, update the YAML files listed below. 
+
+> [!TIP]
+> **Privacy First**: Put your personal files inside `data/<category>/personal/` (e.g. `data/contact/personal/contact.yaml`). The system automatically prefers personal files when they exist and ignores them from Git!
+
+| Category | Location | File Name | Description & Required Fields |
+| :--- | :--- | :--- | :--- |
+| **Contact Info** | `data/contact/personal/` | `contact.yaml` | Candidate `name` & `email` (required); `phone`, `linkedin`, `github`, `location` (optional). |
+| **Education** | `data/education/personal/` | `education.yaml` | `institution`, `degree`, `location`, `dates` (graduation year extracted automatically). |
+| **Work History** | `data/experiences/personal/` | `role1.yaml`, `role2.yaml` | Source of truth experiences: `company`, `start`, `end`, `importance`, `titles`, `bullets`, `tags`. |
+| **Projects** | `data/projects/personal/` | `projects.yaml` | Personal projects: `id`, `title`, `tech_stack`, `bullets` (no dates required). |
+| **Skills Taxonomy** | `data/` | `skills.yaml` | Taxonomy mapping skills into 5 categories: `Languages`, `Frameworks`, `Cloud`, `Databases`, `Technologies`. |
+| **API Keys** | `./` (Root directory) | `.env` | Free LLM API keys (`OPENROUTER_API_KEY`, `GEMINI_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, or `CUSTOM_API_KEY`). |
+
+---
+
+### Detailed File Templates for Personalization
+
+#### 1. Contact Information (`data/contact/personal/contact.yaml`)
+```yaml
+name: "Candidate Full Name"
+email: "your.email@example.com"
+linkedin: "linkedin.com/in/yourprofile"    # Optional
+github: "github.com/yourusername"          # Optional
+phone: "+44 7000 000000"                  # Optional
+location: "City, Country"                 # Optional
+```
+
+#### 2. Education History (`data/education/personal/education.yaml`)
+```yaml
+education:
+  - institution: "University of Birmingham"
+    location: "Birmingham, UK"
+    degree: "MSc Advanced Computer Science"
+    dates: "Sept 2022"                      # Graduation year (e.g., 2022) is extracted automatically
+
+  - institution: "Mar Athanasius College of Engineering"
+    location: "Kerala, India"
+    degree: "BTech Computer Science and Engineering"
+    dates: "Aug 2020"                       # Graduation year (e.g., 2020) is extracted automatically
+```
+
+#### 3. Personal Work Experience (`data/experiences/personal/fsp_cloud_backend.yaml`)
+```yaml
+id: "fsp_cloud_backend"
+company: "FSP"
+start: "2026"
+end: "Present"                              # "Present" ensures this position sits at the top
+importance: 10                             # Priority rating (1 to 10)
+optional: false                            # Set true if this job can be omitted when space is tight
+
+tags:
+  - "csharp"
+  - "dotnet"
+  - "azure"
+  - "distributed-systems"
+
+titles:
+  default: "Associate Developer - Cloud & Backend"
+  variants:
+    - "Cloud & Backend Engineer"
+    - "Senior Backend Engineer"
+
+bullets:
+  - id: "fsp_cb_b1"
+    text: "Engineered a fault-tolerant asynchronous integration layer by migrating synchronous endpoints to serverless computing and distributed message queues."
+    tags: ["azure", "serverless", "distributed-systems"]
+```
+
+#### 4. Personal Projects (`data/projects/personal/projects.yaml`)
+```yaml
+projects:
+  - id: "gitlytics"
+    title: "Gitlytics"
+    tech_stack: ["Python", "Flask", "React", "PostgreSQL", "Docker"]
+    bullets:
+      - "Developed a full-stack web application using Flask serving a REST API with React as frontend."
+      - "Implemented GitHub OAuth to retrieve data from user repositories."
+
+  - id: "simple_paintball"
+    title: "Simple Paintball"
+    tech_stack: ["Spigot API", "Java", "Maven", "Git"]
+    bullets:
+      - "Developed a Minecraft server plugin published to websites gaining 2K+ downloads."
+```
+
+#### 5. Technical Skills Taxonomy (`data/skills.yaml`)
+```yaml
+skills:
+  # Languages: C#, Java, Python, TypeScript, JavaScript, C++, SQL, Bash, HTML/CSS
+  - id: csharp
+    display: "C#"
+    aliases: ["c#", "csharp", ".net", "dotnet"]
+    category: "Languages"
+
+  # Frameworks: .NET / ASP.NET Core, React, Blazor, Entity Framework
+  - id: dotnet_aspnet
+    display: ".NET / ASP.NET Core"
+    aliases: [".net", "asp.net core", ".net core"]
+    category: "Frameworks"
+
+  # Cloud: Azure, AWS, DigitalOcean
+  - id: azure
+    display: "Azure"
+    aliases: ["azure", "microsoft azure"]
+    category: "Cloud"
+
+  # Databases: SQL Server, PostgreSQL, MongoDB, Redis, BigQuery, Firestore / Firebase
+  - id: sql_server
+    display: "SQL Server"
+    aliases: ["sql server", "ms sql", "mssql"]
+    category: "Databases"
+
+  # Technologies: Docker, Kubernetes, Azure DevOps, GitHub Actions, Git, Bicep, ARM Templates, REST APIs, Microservices, Event-Driven Architecture
+  - id: docker
+    display: "Docker"
+    aliases: ["docker", "containerization"]
+    category: "Technologies"
+```
+
+#### 6. API Environment File (`.env`)
+```env
+# Standard Cloud Provider Keys (Free tiers available):
+OPENROUTER_API_KEY=your_openrouter_key
+GEMINI_API_KEY=your_gemini_key
+CEREBRAS_API_KEY=your_cerebras_key
+GROQ_API_KEY=your_groq_key
+
+# Optional Custom API Key (Auto-registers as Priority 0 / Top Priority):
+CUSTOM_API_KEY=your_custom_api_key
+CUSTOM_API_URL=https://api.openai.com/v1
+CUSTOM_API_MODEL=gpt-4o-mini
+```
 
 ---
 
