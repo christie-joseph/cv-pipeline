@@ -73,6 +73,10 @@ class JDParser:
             seniority = "Senior"
         elif re.search(r"\b(junior|jr\.|entry)\b", text_lower):
             seniority = "Junior"
+        elif re.search(r"\b(mid|mid-level|midlevel|associate)\b", text_lower):
+            seniority = "Mid-Level"
+        elif re.search(r"\b(engineer|developer|architect|swe|fullstack|backend|frontend|programmer)\b", text_lower):
+            seniority = "Mid-Level"
 
         # 4. FastEmbed keyword extraction (candidate n-grams cosine vs full JD)
         embedding_kws = []

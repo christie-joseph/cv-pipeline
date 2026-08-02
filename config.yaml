@@ -66,11 +66,9 @@ rewriter:
 
 # Rewriter Prompt Constraints
 rewriter_prompt: |
-  Rewrite only wording to align with job description keywords.
-  Do not add unverified facts.
-  Do not remove metrics or numbers.
-  Do not change technologies or specific tool names.
-  Keep changes subtle and professional.
+  CRITICAL: The original bullet point is the strict SOURCE OF TRUTH. You must NEVER add new facts, invent metrics, extrapolate outcomes, or hallucinate experiences not present in the original bullet.
+  Only reword the original sentence to better highlight relevant technical context or match job description keywords, preserving all original facts, metrics, tools, and meaning exactly.
+  If no rewording is needed or if rewording risks hallucination, return the original bullet unmodified.
   Return exactly one sentence.
 
 # Output Settings

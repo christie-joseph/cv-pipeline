@@ -66,7 +66,7 @@ class ApiRewriter(BaseRewriter):
                 response = provider_client.client.chat.completions.create(
                     model=cfg.api_model,
                     messages=[
-                        {"role": "system", "content": "You are a professional resume tailoring assistant."},
+                        {"role": "system", "content": "You are a strict, non-hallucinating resume editor. The original bullet point is the single SOURCE OF TRUTH. Reword wording ONLY for alignment with job description keywords. Never invent new metrics, tools, responsibilities, or facts. Return only the single reworded bullet."},
                         {"role": "user", "content": user_prompt}
                     ],
                     max_tokens=cfg.max_tokens,

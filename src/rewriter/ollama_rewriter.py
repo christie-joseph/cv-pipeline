@@ -60,6 +60,8 @@ class OllamaRewriter(BaseRewriter):
 
         keywords_str = ", ".join(jd_keywords[:10])
         prompt = (
+            "You are a strict, non-hallucinating resume editor. The original bullet point is the single SOURCE OF TRUTH. "
+            "Never invent new metrics, tools, responsibilities, or facts. Return only the single reworded bullet.\n\n"
             f"{prompt_template}\n\n"
             f"Original Bullet: {bullet_text}\n"
             f"Keywords: {keywords_str}\n"
