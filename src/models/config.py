@@ -132,6 +132,7 @@ class OutputConfig(BaseModel):
     show_diff: bool = True
     show_manifest: bool = True
     copy_to_clipboard: bool = False
+    debug: bool = False
 
 
 class PipelineConfig(BaseModel):
@@ -139,6 +140,7 @@ class PipelineConfig(BaseModel):
     max_bullets_per_experience: int = 3
     minimum_similarity: float = 0.25
     mmr_lambda: float = 0.7
+    debug: bool = False
     weights: WeightsConfig = Field(default_factory=WeightsConfig)
     embedding_model: str = "BAAI/bge-small-en-v1.5"
     rewriter: RewriterConfig = Field(default_factory=RewriterConfig)

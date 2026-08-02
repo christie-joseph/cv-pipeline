@@ -89,21 +89,20 @@
 %----------HEADING----------
 \begin{center}
     \textbf{\Huge \scshape {{ contact_info.name }}} \\ \vspace{2pt}
-    {% if target_role %}{\large \textit{ {{ target_role }} }} \\ \vspace{2pt}{% endif %}
     \small {{ contact_info.contact_line }}
 \end{center}
 
-%-----------EDUCATION-----------
-{% if education %}
-\section{Education}
-  \resumeSubHeadingListStart
-    {% for edu in education %}
-    \resumeSubheading
-      { {{ edu.institution }} }{ {{ edu.location }} }
-      { {{ edu.full_degree }} }{ {{ edu.dates }} }
-    {% endfor %}
-  \resumeSubHeadingListEnd
-{% endif %}
+%-----------TECHNICAL SKILLS-----------
+\section{Technical Skills}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+     \textbf{Languages}{: {{ languages }}} \\
+     \textbf{Frameworks}{: {{ frameworks }}} \\
+     \textbf{Databases}{: {{ databases }}} \\
+     \textbf{Cloud}{: {{ cloud }}} \\
+     \textbf{Technologies}{: {{ technologies }}}
+    }}
+ \end{itemize}
 
 %-----------EXPERIENCE-----------
 {% if selected_experiences %}
@@ -138,17 +137,17 @@
     \resumeSubHeadingListEnd
 {% endif %}
 
-%-----------TECHNICAL SKILLS-----------
-\section{Technical Skills}
- \begin{itemize}[leftmargin=0.15in, label={}]
-    \small{\item{
-     \textbf{Languages}{: {{ languages }}} \\
-     \textbf{Frameworks}{: {{ frameworks }}} \\
-     \textbf{Databases}{: {{ databases }}} \\
-     \textbf{Cloud}{: {{ cloud }}} \\
-     \textbf{Technologies}{: {{ technologies }}}
-    }}
- \end{itemize}
+%-----------EDUCATION-----------
+{% if education %}
+\section{Education}
+  \resumeSubHeadingListStart
+    {% for edu in education %}
+    \resumeSubheading
+      { {{ edu.institution }} }{ {{ edu.location }} }
+      { {{ edu.full_degree }} }{ {{ edu.dates }} }
+    {% endfor %}
+  \resumeSubHeadingListEnd
+{% endif %}
 
 %-------------------------------------------
 \end{document}

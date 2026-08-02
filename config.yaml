@@ -79,3 +79,4 @@ output:
   show_diff: true
   show_manifest: true
   copy_to_clipboard: false
+  debug: false

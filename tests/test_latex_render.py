@@ -40,7 +40,6 @@ def test_latex_renderer():
     latex_str = renderer.render(resume)
     assert "\\begin{document}" in latex_str
     assert "Jake Ryan" in latex_str
-    assert "Backend Engineer" in latex_str
     assert "2022" in latex_str  # Extracted graduation year
     assert "\\resumeSubheading" in latex_str
     assert "Backend Software Engineer" in latex_str

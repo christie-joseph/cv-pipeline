@@ -51,9 +51,13 @@ class JDParser:
                 if ent.label_ in ["ORG", "PRODUCT"]:
                     spacy_kws.append(ent.text.lower())
 
-        # Clean role extraction: split on common separators (|, -, –, at) and strip punctuation
+        # Clean role extraction: match concise job titles from title list or header line
         first_line = text.strip().split("\n")[0]
-        if re.search(r"\b(engineer|developer|architect|lead|analyst)\b", first_line, re.IGNORECASE):
+        # Match common clean target roles
+        role_match = re.search(r"\b((?:Senior\s+|Staff\s+|Principal\s+|Lead\s+|Junior\s+)?(?:Full\s*Stack|Backend|Frontend|Software|Data|DevOps|Cloud|Machine\s+Learning)\s+(?:Engineer|Developer|Architect|Scientist))\b", text[:300], re.IGNORECASE)
+        if role_match:
+            role = role_match.group(1).title()
+        elif re.search(r"\b(engineer|developer|architect|lead|analyst)\b", first_line, re.IGNORECASE):
             parts = re.split(r"\s*(?:\||-|–|\bat\b)\s*", first_line, flags=re.IGNORECASE)
             role_part = parts[0]
             for part in parts:
@@ -61,6 +65,11 @@ class JDParser:
                     role_part = part
                     break
             role = re.sub(r"[^\w\s,]", "", role_part).strip()
+            if len(role.split()) > 5:
+                # If parsed role is a long sentence, extract the concise title phrase
+                phrase_match = re.search(r"\b([A-Z][a-zA-Z\s]{3,30}\s+(?:Engineer|Developer|Architect|Scientist))\b", role)
+                if phrase_match:
+                    role = phrase_match.group(1).strip()
 
         # 3. Regex for Seniority using word boundaries
         seniority = None

@@ -21,7 +21,8 @@ class ProviderClient:
                 self.client = OpenAI(
                     api_key=api_key.strip(),
                     base_url=config.api_url,
-                    timeout=float(config.timeout_seconds)
+                    timeout=float(config.timeout_seconds),
+                    max_retries=0
                 )
             except Exception as e:
                 logger.warning(f"Could not initialize OpenAI client for '{config.name}': {e}")
