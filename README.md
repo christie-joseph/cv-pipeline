@@ -329,7 +329,7 @@ Your work history is stored in readable YAML text files under `data/experiences/
 ### 2. Smart Hybrid Job Description Parser (`src/parser/jd_parser.py`)
 Combines 3 text analysis techniques:
 1. **YAKE Statistical Keyphrase Extraction**: Identifies key industry terms.
-2. **spaCy Grammar & Entity Recognition**: Extracts company names and product terms.
+2. **spaCy Grammar & Entity Recognition**: Extracts company names, product terms, and precisely classifies job seniority (e.g., `Principal`, `Senior`, `Mid-Level/SWE`, `Junior`).
 3. **FastEmbed Semantic Vector Search**: Computes vector embeddings to discover conceptual job requirements.
 
 ### 3. Maximal Marginal Relevance (MMR) Bullet Selection (`src/ranker/bullet_ranker.py`)
@@ -339,6 +339,7 @@ Balances **Relevance** (how well a bullet matches the job description) against *
 - **Tier A (Cloud LLM Pool)**: Tries providers by priority: **1st OpenRouter $\rightarrow$ 2nd Gemini $\rightarrow$ 3rd Cerebras $\rightarrow$ 4th Groq** (or top-priority `CUSTOM_API_KEY`). If one provider hits a rate limit, it automatically tries the next.
 - **Tier B (Local Ollama GPU/CPU)**: Runs local AI model (`qwen2.5:1.5b`) if cloud APIs are unavailable.
 - **Tier C (Python Rule Engine)**: Zero-latency deterministic rule engine that strengthens action verbs offline.
+> **Strict Anti-Hallucination Guardrails**: Before any AI rewritten bullet is accepted, it must pass a strict Python validation layer that guarantees **100% Metric Retention** (no dropped/altered numbers or percentages) and **Length Bounding** (blocks overly verbose hallucinated paragraphs).
 
 ---
 
@@ -347,11 +348,11 @@ Balances **Relevance** (how well a bullet matches the job description) against *
 To verify that all system components, vector calculations, and timeline rules are working correctly, run:
 
 ```bash
-# Run full automated test suite (19 tests)
+# Run full automated test suite (24 tests)
 python -m pytest tests/ -v
 ```
 
-**Expected Result**: All 19 unit & integration tests pass cleanly in under 30 seconds.
+**Expected Result**: All 24 unit & integration tests pass cleanly in under 35 seconds.
 
 ---
 
