@@ -22,7 +22,7 @@ def test_latex_renderer():
 
     resume = TailoredResume(
         contact_info=ContactInfo(name="Jake Ryan", email="jake@su.edu", phone="123-456-7890"),
-        education=[EducationItem(institution="Southwestern University", location="TX", degree="MSc Computer Science", dates="Sept 2021 -- Sept 2022")],
+        education=[EducationItem(institution="Southwestern University", location="TX", degree="MSc", major="Computer Science", dates="Sept 2021 -- Sept 2022")],
         projects=[ProjectItem(id="p1", title="Gitlytics", tech_stack=["Python", "React"], dates="2020", bullets=["Built dashboard."])],
         selected_experiences=[
             SelectedExperience(

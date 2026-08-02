@@ -25,6 +25,7 @@ class EducationItem(BaseModel):
     institution: str
     location: str
     degree: str
+    major: str = ""
     dates: str
 
 

@@ -85,10 +85,16 @@ class LatexRenderer:
         # 2. Education Data (Graduation Year only)
         education_data = []
         for edu in resume.education:
+            degree_str = self.escape_latex(edu.degree)
+            major_str = self.escape_latex(edu.major)
+            full_degree = f"{degree_str} in {major_str}" if major_str else degree_str
+
             education_data.append({
                 "institution": self.escape_latex(edu.institution),
                 "location": self.escape_latex(edu.location),
-                "degree": self.escape_latex(edu.degree),
+                "degree": degree_str,
+                "major": major_str,
+                "full_degree": full_degree,
                 "dates": self.escape_latex(self._extract_grad_year(edu.dates)),
             })
 

@@ -100,7 +100,7 @@
     {% for edu in education %}
     \resumeSubheading
       { {{ edu.institution }} }{ {{ edu.location }} }
-      { {{ edu.degree }} }{ {{ edu.dates }} }
+      { {{ edu.full_degree }} }{ {{ edu.dates }} }
     {% endfor %}
   \resumeSubHeadingListEnd
 {% endif %}
