@@ -158,15 +158,15 @@ class LatexRenderer:
 
         # Ensure mandatory sections are never empty by falling back to curated defaults if none matched
         if not languages:
-            languages = [self.escape_latex(s) for s in ["C#", "SQL", "Python", "Java", "C++", "JavaScript", "TypeScript"]]
+            languages = [self.escape_latex(s) for s in ["C#", "Java", "Python", "TypeScript", "JavaScript", "C++", "SQL", "Bash", "HTML/CSS"]]
         if not frameworks:
-            frameworks = [self.escape_latex(s) for s in ["ASP.NET Core", "Blazor", "Entity Framework", "Spring Boot"]]
+            frameworks = [self.escape_latex(s) for s in [".NET / ASP.NET Core", "React", "Blazor", "Entity Framework"]]
         if not databases:
-            databases = [self.escape_latex(s) for s in ["MS SQL", "BigQuery", "PostgreSQL", "Firestore", "Redis"]]
+            databases = [self.escape_latex(s) for s in ["SQL Server", "PostgreSQL", "MongoDB", "Redis", "BigQuery", "Firestore / Firebase"]]
         if not cloud:
-            cloud = [self.escape_latex(s) for s in ["Azure", "AWS", "DigitalOcean", "Kubernetes", "Docker"]]
+            cloud = [self.escape_latex(s) for s in ["Azure", "AWS", "DigitalOcean"]]
         if not technologies:
-            technologies = [self.escape_latex(s) for s in ["RESTful APIs", "Git", "GitHub Actions", "Azure DevOps", "Distributed Systems"]]
+            technologies = [self.escape_latex(s) for s in ["Docker", "Kubernetes", "Azure DevOps", "GitHub Actions", "Git", "Bicep", "ARM Templates", "REST APIs", "Microservices", "Event-Driven Architecture"]]
 
         rendered = template.render(
             contact_info=contact_data,
