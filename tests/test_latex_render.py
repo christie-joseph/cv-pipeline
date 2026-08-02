@@ -46,5 +46,7 @@ def test_latex_renderer():
     assert "Backend Software Engineer" in latex_str
     assert "Languages" in latex_str
     assert "Frameworks" in latex_str
-    assert "Tools \\& Databases" in latex_str
+    assert "Databases" in latex_str
+    assert "Cloud" in latex_str
+    assert "Technologies" in latex_str
     assert "\\&" in latex_str  # Escaped ampersand

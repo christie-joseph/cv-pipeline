@@ -124,37 +124,49 @@ class LatexRenderer:
                 "bullets": [self.escape_latex(b) for b in proj.bullets]
             })
 
-        # 5. Categorize Skills (Languages, Frameworks, Tools & Databases)
+        # 5. Categorize Skills (Languages, Frameworks, Databases, Cloud, Technologies)
         languages: List[str] = []
         frameworks: List[str] = []
-        tools_databases: List[str] = []
+        databases: List[str] = []
+        cloud: List[str] = []
+        technologies: List[str] = []
 
         # Map display name to category
         skill_categories: Dict[str, str] = {}
         for s in self.taxonomy.skills:
-            skill_categories[s.display.lower()] = s.category or "Tools & Databases"
+            cat_val = s.category or "Technologies"
+            skill_categories[s.display.lower()] = cat_val
             for alias in s.aliases:
-                skill_categories[alias.lower()] = s.category or "Tools & Databases"
+                skill_categories[alias.lower()] = cat_val
 
         for skill in resume.selected_skills:
             skill_lower = skill.lower()
-            cat = skill_categories.get(skill_lower, "Tools & Databases")
+            cat = skill_categories.get(skill_lower, "Technologies")
             
             escaped_skill = self.escape_latex(skill)
-            if cat == "Languages":
+            cat_lower = cat.lower()
+            if "languages" in cat_lower:
                 languages.append(escaped_skill)
-            elif cat == "Frameworks":
+            elif "frameworks" in cat_lower:
                 frameworks.append(escaped_skill)
+            elif "databases" in cat_lower:
+                databases.append(escaped_skill)
+            elif "cloud" in cat_lower or "infrastructure" in cat_lower:
+                cloud.append(escaped_skill)
             else:
-                tools_databases.append(escaped_skill)
+                technologies.append(escaped_skill)
 
         # Ensure mandatory sections are never empty by falling back to curated defaults if none matched
         if not languages:
             languages = [self.escape_latex(s) for s in ["C#", "SQL", "Python", "Java", "C++", "JavaScript", "TypeScript"]]
         if not frameworks:
             frameworks = [self.escape_latex(s) for s in ["ASP.NET Core", "Blazor", "Entity Framework", "Spring Boot"]]
-        if not tools_databases:
-            tools_databases = [self.escape_latex(s) for s in ["Docker", "Kubernetes", "Azure", "AWS", "Git", "GitHub Actions"]]
+        if not databases:
+            databases = [self.escape_latex(s) for s in ["MS SQL", "BigQuery", "PostgreSQL", "Firestore", "Redis"]]
+        if not cloud:
+            cloud = [self.escape_latex(s) for s in ["Azure", "AWS", "DigitalOcean", "Kubernetes", "Docker"]]
+        if not technologies:
+            technologies = [self.escape_latex(s) for s in ["RESTful APIs", "Git", "GitHub Actions", "Azure DevOps", "Distributed Systems"]]
 
         rendered = template.render(
             contact_info=contact_data,
@@ -164,6 +176,8 @@ class LatexRenderer:
             projects=projects_data,
             languages=", ".join(languages),
             frameworks=", ".join(frameworks),
-            tools_databases=", ".join(tools_databases)
+            databases=", ".join(databases),
+            cloud=", ".join(cloud),
+            technologies=", ".join(technologies)
         )
         return rendered
