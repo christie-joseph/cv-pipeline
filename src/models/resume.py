@@ -1,9 +1,19 @@
 import os
+import re
 import yaml
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
 from .experience import Bullet, Experience
+
+
+def _extract_end_year(date_str: str) -> int:
+    if not date_str:
+        return 0
+    if "present" in date_str.lower() or "current" in date_str.lower() or "now" in date_str.lower():
+        return 9999
+    years = [int(y) for y in re.findall(r"\b(19\d\d|20\d\d)\b", date_str)]
+    return max(years) if years else 0
 
 
 class SelectedBullet(BaseModel):
@@ -80,7 +90,7 @@ def load_contact_info() -> ContactInfo:
 
 
 def load_education() -> List[EducationItem]:
-    """Loads education history. Prefers data/education/personal/education.yaml if available."""
+    """Loads education history in reverse chronological order. Prefers data/education/personal/education.yaml if available."""
     project_root = Path(__file__).resolve().parent.parent.parent
     personal_path = project_root / "data" / "education" / "personal" / "education.yaml"
     default_path = project_root / "data" / "education.yaml"
@@ -92,7 +102,9 @@ def load_education() -> List[EducationItem]:
     with open(target_path, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f) or {}
         items = data.get("education", [])
-        return [EducationItem(**item) for item in items]
+        edu_list = [EducationItem(**item) for item in items]
+        edu_list.sort(key=lambda e: _extract_end_year(e.dates), reverse=True)
+        return edu_list
 
 
 def load_projects() -> List[ProjectItem]:

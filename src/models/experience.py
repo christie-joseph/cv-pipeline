@@ -3,7 +3,7 @@ import glob
 import yaml
 from pathlib import Path
 from typing import List, Optional
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, model_validator, field_validator
 
 
 class Bullet(BaseModel):
@@ -27,6 +27,13 @@ class Experience(BaseModel):
     tags: List[str] = Field(default_factory=list)
     titles: TitleConfig
     bullets: List[Bullet] = Field(default_factory=list)
+
+    @field_validator("end", mode="before")
+    @classmethod
+    def normalize_end_date(cls, v: str) -> str:
+        if isinstance(v, str) and v.strip().lower() in ("current", "now"):
+            return "Present"
+        return v
 
     @model_validator(mode="after")
     def check_bullet_ids(self):

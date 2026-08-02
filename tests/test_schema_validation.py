@@ -31,3 +31,36 @@ def test_skills_taxonomy_loading():
     skill_ids = [s.id for s in taxonomy.skills]
     assert "kafka" in skill_ids
     assert "java" in skill_ids
+
+
+def test_experience_date_normalization():
+    from src.models.experience import Experience, TitleConfig
+    exp1 = Experience(
+        id="test1",
+        company="Test Co",
+        start="Jan 2020",
+        end="current",
+        titles=TitleConfig(default="Engineer")
+    )
+    assert exp1.end == "Present"
+
+    exp2 = Experience(
+        id="test2",
+        company="Test Co",
+        start="Jan 2020",
+        end="now",
+        titles=TitleConfig(default="Engineer")
+    )
+    assert exp2.end == "Present"
+
+
+def test_education_sorting():
+    from src.models.resume import load_education, _extract_end_year
+    assert _extract_end_year("May 2021") == 2021
+    assert _extract_end_year("Sep 2018 - Present") == 9999
+    
+    edu_list = load_education()
+    if len(edu_list) >= 2:
+        end_years = [_extract_end_year(e.dates) for e in edu_list]
+        assert end_years == sorted(end_years, reverse=True)
+
