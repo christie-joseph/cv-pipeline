@@ -10,5 +10,9 @@ class BaseRewriter(ABC):
 
     @abstractmethod
     def rewrite(self, bullet_text: str, jd_keywords: List[str], prompt_template: str) -> str:
-        """Rewrite a bullet point using the specified provider."""
+        """Rewrite a single bullet point using the specified provider."""
         pass
+
+    def rewrite_batch(self, bullets: List[str], jd_keywords: List[str], prompt_template: str) -> List[str]:
+        """Rewrite a list of bullet points. Default implementation loops through rewrite()."""
+        return [self.rewrite(b, jd_keywords, prompt_template) for b in bullets]

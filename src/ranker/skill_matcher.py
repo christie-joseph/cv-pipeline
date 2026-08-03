@@ -42,13 +42,14 @@ class SkillMatcher:
         right_b = r"\b" if re.search(r"\w$", term) else r"(?!\w)"
         return f"{left_b}{escaped}{right_b}"
 
-    def match(self, jd_skills: List[str], resume_tags: List[str]) -> MatchResult:
+    def match(self, jd_skills: List[str], resume_tags: List[str], resume_text: str = "") -> MatchResult:
         matched: List[Tuple[str, str]] = []
         missing: List[str] = []
         seen_matched: Set[str] = set()
 
         # Filter out empty or whitespace-only tags to prevent zero-length regex false positives
         resume_tags_lower = {t.lower().strip() for t in resume_tags if t and len(t.strip()) > 0}
+        resume_text_lower = resume_text.lower() if resume_text else ""
 
         for jd_skill in jd_skills:
             jd_skill_lower = jd_skill.lower()
@@ -76,7 +77,17 @@ class SkillMatcher:
                         found = True
                         break
 
-            # Pass 3: RapidFuzz Fuzzy Match (for longer terms)
+            # Pass 3: Full-Text Resume Scanning (catches untagged skills mentioned in raw bullet text)
+            if not found and resume_text_lower:
+                pattern = self._build_regex_pattern(jd_skill_lower)
+                if re.search(pattern, resume_text_lower, flags=re.IGNORECASE):
+                    canonical = self.alias_map.get(jd_skill_lower, jd_skill.title())
+                    if canonical not in seen_matched:
+                        matched.append((canonical, "text match"))
+                        seen_matched.add(canonical)
+                    found = True
+
+            # Pass 4: RapidFuzz Fuzzy Match (for longer terms against tags)
             if not found and len(jd_skill_lower) > 2:
                 for tag in resume_tags_lower:
                     if len(tag) > 2:

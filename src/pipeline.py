@@ -65,10 +65,14 @@ class Pipeline:
             company_profile_name=company_profile_name
         )
 
-        # 4. Rank Bullets (MMR) & Apply Rewriting Chain
+        # 4. Rank Bullets (MMR) & Collect Bullets across Experiences
         selected_experiences: list[SelectedExperience] = []
         all_resume_tags = []
         used_tiers = set()
+        
+        # Intermediate structure to hold selected bullets per experience
+        exp_bullets_map = []
+        all_selected_bullet_objects = []
 
         for s_exp in scored_exps:
             bullets = select_bullets_mmr(
@@ -78,32 +82,33 @@ class Pipeline:
                 max_k=self.config.max_bullets_per_experience,
                 lambda_param=self.config.mmr_lambda
             )
+            exp_bullets_map.append((s_exp, bullets))
+            all_selected_bullet_objects.extend(bullets)
 
-            # Rewrite each bullet
-            rewritten_bullets = []
-            for sel_b in bullets:
-                rewritten_text, tier = self.rewriter_chain.rewrite(
-                    bullet_text=sel_b.bullet.text,
-                    jd_keywords=jd_profile.keywords
-                )
-                sel_b.rewritten_text = rewritten_text
-                sel_b.rewriter_tier = tier
-                used_tiers.add(tier)
-                rewritten_bullets.append(sel_b)
+        # Execute Batch AI Rewriting (1 API call for all bullets)
+        raw_bullet_texts = [sel_b.bullet.text for sel_b in all_selected_bullet_objects]
+        rewritten_texts, rewriter_tiers = self.rewriter_chain.rewrite_batch(
+            bullets=raw_bullet_texts,
+            jd_keywords=jd_profile.keywords
+        )
 
-                # Collect tags ONLY from selected bullets
-                all_resume_tags.extend(sel_b.bullet.tags)
+        # Map rewritten results back to bullet objects
+        for sel_b, r_text, r_tier in zip(all_selected_bullet_objects, rewritten_texts, rewriter_tiers):
+            sel_b.rewritten_text = r_text
+            sel_b.rewriter_tier = r_tier
+            used_tiers.add(r_tier)
+            all_resume_tags.extend(sel_b.bullet.tags)
 
+        # Reconstruct SelectedExperience list
+        for s_exp, bullets in exp_bullets_map:
             selected_experiences.append(
                 SelectedExperience(
                     experience=s_exp.experience,
                     selected_title=s_exp.best_title,
-                    selected_bullets=rewritten_bullets,
+                    selected_bullets=bullets,
                     composite_score=s_exp.score
                 )
             )
-
-            # Collect tags from selected experience top-level tags
             all_resume_tags.extend(s_exp.experience.tags)
 
         # Summarize rewriter tiers used
@@ -114,10 +119,14 @@ class Pipeline:
         else:
             overall_rewriter_tier = f"Mixed ({', '.join(sorted(used_tiers))})"
 
-        # 5. Match Skills using tags ONLY from selected experiences and bullets
+        # Concatenate full text of selected bullets for deep text scanning
+        full_resume_text = " ".join([sel_b.rewritten_text or sel_b.bullet.text for sel_b in all_selected_bullet_objects])
+
+        # 5. Match Skills using tags AND full resume text
         match_result = self.skill_matcher.match(
             jd_skills=jd_profile.skills,
-            resume_tags=all_resume_tags
+            resume_tags=all_resume_tags,
+            resume_text=full_resume_text
         )
 
         selected_skills = [item for item, _ in match_result.matched]
