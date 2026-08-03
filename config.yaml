@@ -1,6 +1,6 @@
 # Pipeline Behavior
 max_experiences: 3
-max_bullets_per_experience: 3
+max_bullets_per_experience: 4
 minimum_similarity: 0.25
 mmr_lambda: 0.7
 
@@ -76,7 +76,7 @@ output:
   compile_pdf: true
   open_pdf: true
   show_ats_report: true
-  show_diff: true
+  show_diff: false
   show_manifest: false
   copy_to_clipboard: false
   debug: false

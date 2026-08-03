@@ -1,17 +1,17 @@
 projects:
-  - id: "gitlytics"
-    title: "Gitlytics"
-    tech_stack: ["Python", "Flask", "React", "PostgreSQL", "Docker"]
-    dates: "June 2020 -- Present"
+  - id: "manna_market"
+    title: "Manna Market"
+    tech_stack: ["PostgreSQL", "MongoDB", "PostGIS", "Kubernetes", "Stripe Connect", "CI/CD"]
+    dates: "Jan 2024 -- Present"
     bullets:
-      - "Developed a full-stack web application using Flask serving a REST API with React as the frontend."
-      - "Implemented GitHub OAuth to retrieve data from user repositories and visualize collaboration."
-      - "Used Celery and Redis for asynchronous background tasks."
+      - "Architected a scalable multi-tenant marketplace leveraging a hybrid PostgreSQL and MongoDB data architecture; optimized storage efficiency by 30% while maintaining sub-100ms API latency for high-traffic environments."
+      - "Engineered a high-performance spatial discovery engine utilizing PostGIS and drive-time isochrones, accelerating location-based queries to sub-50ms and eliminating delivery boundary errors."
+      - "Streamlined merchant onboarding through Stripe Connect integration and RBAC protocols, reducing lead times from days to minutes while deploying via a zero-downtime Kubernetes CI/CD pipeline."
 
-  - id: "simple_paintball"
-    title: "Simple Paintball"
-    tech_stack: ["Spigot API", "Java", "Maven", "TravisCI", "Git"]
-    dates: "May 2018 -- May 2020"
+  - id: "powershell_clone"
+    title: "Powershell Clone"
+    tech_stack: ["C++", "Unix", "Systems Programming"]
+    dates: "May 2023 -- Dec 2023"
     bullets:
-      - "Developed a Minecraft server plugin published to websites gaining 2K+ downloads."
-      - "Implemented continuous delivery using TravisCI to build the plugin upon new releases."
+      - "Developed a functional C++ Unix-style shell featuring robust command parsing, built-in utilities, and efficient PATH-based resolution logic."
+      - "Implemented external process execution for native system commands, ensuring a responsive and deterministic interactive user experience."

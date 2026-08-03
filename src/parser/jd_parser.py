@@ -1,8 +1,8 @@
 import re
 import spacy
-import yake
 import numpy as np
 from typing import List
+from pathlib import Path
 from ..models.jd_profile import JDProfile
 
 from ..models.experience import SkillTaxonomy
@@ -23,9 +23,14 @@ NON_SKILL_STOPWORDS = {
 
     # Role boilerplate
     "software engineer",
+    "software engineers",
     "senior software engineer",
     "backend software",
     "senior backend",
+    "devops engineer",
+    "devops engineers",
+    "product manager",
+    "product managers",
     "developer",
     "engineer",
     "software",
@@ -40,6 +45,7 @@ NON_SKILL_STOPWORDS = {
     "role",
     "you",
     "performance",
+    "familiarity",
 
     # Experience language
     "experience",
@@ -72,6 +78,8 @@ NON_SKILL_STOPWORDS = {
     "troubleshoot",
     "troubleshoot production issues",
     "aggregating",
+    "familiarity",
+    
 
     # Generic soft skills
     "communication",
@@ -105,8 +113,16 @@ NON_SKILL_STOPWORDS = {
     # Academic noise
     "degree",
     "computer science",
+    "software engineering",
+    "information technology",
+    "software engineers",
+    "Devops Engineers",
+    "Product Managers",
     "science",
     "field",
+    "mid",
+    "mid-level",
+    "technical",
 
     # Formatting artifacts
     "github actions\n",
@@ -119,6 +135,11 @@ class JDParser:
     def __init__(self, embedding_model=None, taxonomy: SkillTaxonomy = None):
         self.embedding_model = embedding_model
         self.taxonomy = taxonomy or SkillTaxonomy.load_from_yaml()
+        
+        # Load global skills whitelist
+        project_root = Path(__file__).resolve().parent.parent.parent
+        self.global_taxonomy = SkillTaxonomy.load_from_yaml(str(project_root / "data" / "global_skills.yaml"))
+        
         self.nlp = None
         
         try:
@@ -130,56 +151,36 @@ class JDParser:
             except Exception:
                 # Fallback to blank model if offline and download fails
                 self.nlp = spacy.blank("en")
-        
-        self.kw_extractor = yake.KeywordExtractor(
-            lan="en", n=2, dedupLim=0.8, top=20, features=None
-        )
 
     def parse(self, text: str) -> JDProfile:
         if not text or len(text.strip()) == 0:
             return JDProfile(raw_text="")
 
-        # 1. YAKE statistical keywords
-        yake_kws = [kw for kw, score in self.kw_extractor.extract_keywords(text)]
-
-        # 2. spaCy NER & Noun Chunks
-        doc = self.nlp(text)
-        spacy_kws = []
+        # 1. Clean role extraction & company header detection from the first line
+        lines = text.strip().split("\n")
+        first_line = lines[0]
         org_entities = set()
         role = None
         
-        # Extract Proper Nouns (often technical tools/skills like Redux, GraphQL, Vite, Jest)
-        for token in doc:
-            if token.pos_ == "PROPN" and len(token.text) > 2 and token.text.lower() not in NON_SKILL_STOPWORDS:
-                spacy_kws.append(token.text.lower())
-                
-        # Extract short noun chunks only if they are single words or contain technical terms/PROPNs
-        if hasattr(doc, "noun_chunks"):
-            for chunk in doc.noun_chunks:
-                chunk_text = chunk.text.strip()
-                words = chunk_text.split()
-                # Exclude long action/responsibility phrases
-                if 1 <= len(words) <= 2:
-                    # Skip chunks starting with verbs or stop words
-                    if not chunk[0].pos_ in ["VERB", "AUX"] and chunk_text.lower() not in NON_SKILL_STOPWORDS:
-                        spacy_kws.append(chunk_text.lower())
-
-        if hasattr(doc, "ents"):
-            for ent in doc.ents:
-                if ent.label_ == "PRODUCT":
-                    spacy_kws.append(ent.text.lower())
-
-        # Clean role extraction & company header detection
-        first_line = text.strip().split("\n")[0]
-        if "—" in first_line or " - " in first_line:
-            company_header = re.split(r"\s*(?:—|-)\s*", first_line)[0].strip().lower()
+        first_line_clean = re.sub(r"^#+\s*", "", first_line)
+        if re.search(r"\s*(?:—|–|-|\||:)\s*", first_line_clean):
+            company_header = re.split(r"\s*(?:—|–|-|\||:)\s*", first_line_clean)[0].strip()
             if company_header:
-                org_entities.add(company_header)
+                org_entities.add(company_header.lower())
+                # Run NER specifically on the company header to extract organization parts
+                try:
+                    header_doc = self.nlp(company_header)
+                    for ent in header_doc.ents:
+                        if ent.label_ in ["ORG", "PERSON"]:
+                            org_entities.add(ent.text.lower().strip())
+                except Exception:
+                    pass
                 for part in re.split(r"\W+", company_header):
                     if len(part) > 2:
-                        org_entities.add(part)
+                        org_entities.add(part.lower())
+
         # Match common clean target roles
-        role_match = re.search(r"\b((?:Senior\s+|Staff\s+|Principal\s+|Lead\s+|Junior\s+)?(?:Full\s*Stack|Backend|Frontend|Software|Data|DevOps|Cloud|Machine\s+Learning)\s+(?:Engineer|Developer|Architect|Scientist))\b", text[:300], re.IGNORECASE)
+        role_match = re.search(r"\b((?:Senior\s+|Staff\s+|Principal\s+|Lead\s+|Junior\s+)?(?:\w+\s+)?(?:Full\s*Stack|Backend|Frontend|Software|Data|DevOps|Cloud|Machine\s+Learning)\s+(?:Engineer|Developer|Architect|Scientist))\b", text[:300], re.IGNORECASE)
         if role_match:
             role = role_match.group(1).title()
         elif re.search(r"\b(engineer|developer|architect|lead|analyst)\b", first_line, re.IGNORECASE):
@@ -191,66 +192,84 @@ class JDParser:
                     break
             role = re.sub(r"[^\w\s,]", "", role_part).strip()
             if len(role.split()) > 5:
-                # If parsed role is a long sentence, extract the concise title phrase
                 phrase_match = re.search(r"\b([A-Z][a-zA-Z\s]{3,30}\s+(?:Engineer|Developer|Architect|Scientist))\b", role)
                 if phrase_match:
                     role = phrase_match.group(1).strip()
 
-        # 3. Regex for Seniority using word boundaries
+        # Clean text for parsing: strip other markdown headers (lines starting with # or ##)
+        cleaned_lines = []
+        for line in lines[1:]:
+            line_str = line.strip()
+            if line_str.startswith("#"):
+                continue
+            # Strip leading markdown bullets and list markers (*, -, +)
+            line_str = re.sub(r"^[\*\-\+\s\u2022]+", "", line_str)
+            # Strip double asterisks (bold markers)
+            line_str = line_str.replace("**", "")
+            cleaned_lines.append(line_str)
+        cleaned_text = "\n".join(cleaned_lines)
+
+        # 2. Extract PROPNs via spaCy as a fallback for unknown skills
+        doc = self.nlp(cleaned_text)
+        spacy_kws = []
+        
+        # Pre-compile taxonomy lower-case display and aliases for O(1) checks
+        taxonomy_terms = set()
+        
+        # Combine user and global taxonomy
+        all_skills = []
+        if self.taxonomy:
+            all_skills.extend(self.taxonomy.skills)
+        if self.global_taxonomy:
+            all_skills.extend(self.global_taxonomy.skills)
+            
+        for skill in all_skills:
+            taxonomy_terms.add(skill.display.lower())
+            for a in skill.aliases:
+                taxonomy_terms.add(a.lower())
+
+        if hasattr(doc, "ents"):
+            for ent in doc.ents:
+                if ent.label_ == "PRODUCT":
+                    spacy_kws.append(ent.text.lower())
+
+        # 4. Regex for Seniority using word boundaries from the first line or role title
         seniority = None
-        text_lower = text.lower()
-        if re.search(r"\b(principal)\b", text_lower):
+        seniority_search_text = (role or first_line).lower()
+        if re.search(r"\b(principal)\b", seniority_search_text):
             seniority = "Principal"
-        elif re.search(r"\b(staff)\b", text_lower):
+        elif re.search(r"\b(staff)\b", seniority_search_text):
             seniority = "Staff"
-        elif re.search(r"\b(senior|sr\.|lead)\b", text_lower):
+        elif re.search(r"\b(senior|sr\.|lead)\b", seniority_search_text):
             seniority = "Senior"
-        elif re.search(r"\b(junior|jr\.|entry)\b", text_lower):
+        elif re.search(r"\b(junior|jr\.|entry)\b", seniority_search_text):
             seniority = "Junior"
-        elif re.search(r"\b(mid|mid-level|midlevel|associate)\b", text_lower):
+        elif re.search(r"\b(mid|mid-level|midlevel|associate)\b", seniority_search_text):
             seniority = "Mid-Level"
-        elif re.search(r"\b(engineer|developer|architect|swe|fullstack|backend|frontend|programmer)\b", text_lower):
+        elif re.search(r"\b(engineer|developer|architect|swe|fullstack|backend|frontend|programmer)\b", seniority_search_text):
             seniority = "Mid-Level"
 
-        # 4. FastEmbed keyword extraction (candidate n-grams cosine vs full JD)
-        embedding_kws = []
-        if self.embedding_model:
-            try:
-                # Retain document order (not alphabetical) using dict.fromkeys to avoid keyphrase truncation
-                raw_words = [token.text.lower() for token in doc if token.is_alpha and not token.is_stop and len(token.text) > 2]
-                words = list(dict.fromkeys(raw_words))
-                if words:
-                    jd_emb = list(self.embedding_model.embed([text]))[0]
-                    word_embs = list(self.embedding_model.embed(words[:50]))
-                    
-                    sims = [
-                        np.dot(jd_emb, w_emb) / (np.linalg.norm(jd_emb) * np.linalg.norm(w_emb) + 1e-9)
-                        for w_emb in word_embs
-                    ]
-                    top_indices = np.argsort(sims)[-15:]
-                    embedding_kws = [words[i] for i in reversed(top_indices)]
-            except Exception:
-                pass
+
 
         # Clean extracted keywords: strip punctuation/newlines and drop multi-word noise sentences or company ORG names
         clean_kws = []
         
-        # 5. Direct Taxonomy Skill Scanning in raw text
+        # 5. Direct Taxonomy Skill Scanning in raw text (User + Global)
         taxonomy_kws = []
         text_lower_raw = text.lower()
-        if self.taxonomy:
-            for skill in self.taxonomy.skills:
-                # Check display name or aliases using boundary-aware regex
-                terms_to_check = [skill.display.lower()] + [a.lower() for a in skill.aliases]
-                for term in terms_to_check:
-                    left_b = r"\b" if re.match(r"^\w", term) else r"(?<!\w)"
-                    right_b = r"\b" if re.search(r"\w$", term) else r"(?!\w)"
-                    pattern = f"{left_b}{re.escape(term)}{right_b}"
-                    if re.search(pattern, text_lower_raw):
-                        taxonomy_kws.append(skill.display)
-                        break
+        
+        for skill in all_skills:
+            # Check display name or aliases using boundary-aware regex
+            terms_to_check = [skill.display.lower()] + [a.lower() for a in skill.aliases]
+            for term in terms_to_check:
+                left_b = r"\b" if re.match(r"^\w", term) else r"(?<!\w)"
+                right_b = r"\b" if re.search(r"\w$", term) else r"(?!\w)"
+                pattern = f"{left_b}{re.escape(term)}{right_b}"
+                if re.search(pattern, text_lower_raw):
+                    taxonomy_kws.append(skill.display)
+                    break
 
-        for kw in taxonomy_kws + yake_kws + spacy_kws + embedding_kws:
+        for kw in taxonomy_kws + spacy_kws:
             # Strip leading markdown symbols (*, **, -, #) and whitespace
             kw_clean = re.sub(r"^[^\w]+", "", kw)
             kw_clean = re.sub(r"[\r\n]+", " ", kw_clean).strip()

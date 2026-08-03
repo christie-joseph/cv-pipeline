@@ -132,49 +132,24 @@ class LatexRenderer:
                 "bullets": [self.escape_latex(b) for b in proj.bullets]
             })
 
-        # 5. Categorize Skills (Languages, Frameworks, Databases, Cloud, Technologies)
-        languages: List[str] = []
-        frameworks: List[str] = []
-        databases: List[str] = []
-        cloud: List[str] = []
-        technologies: List[str] = []
-
-        # Map display name to category
-        skill_categories: Dict[str, str] = {}
+        # 5. Categorize Skills dynamically from self.taxonomy.skills (Max 5 categories)
+        category_order = []
+        category_skills = {}
         for s in self.taxonomy.skills:
-            cat_val = s.category or "Technologies"
-            skill_categories[s.display.lower()] = cat_val
-            for alias in s.aliases:
-                skill_categories[alias.lower()] = cat_val
+            cat = s.category or "Technologies"
+            if cat not in category_skills:
+                if len(category_order) >= 5:
+                    continue  # Ignore any 6th category and beyond
+                category_order.append(cat)
+                category_skills[cat] = []
+            category_skills[cat].append(self.escape_latex(s.display))
 
-        for skill in resume.selected_skills:
-            skill_lower = skill.lower()
-            cat = skill_categories.get(skill_lower, "Technologies")
-            
-            escaped_skill = self.escape_latex(skill)
-            cat_lower = cat.lower()
-            if "languages" in cat_lower:
-                languages.append(escaped_skill)
-            elif "frameworks" in cat_lower:
-                frameworks.append(escaped_skill)
-            elif "databases" in cat_lower:
-                databases.append(escaped_skill)
-            elif "cloud" in cat_lower or "infrastructure" in cat_lower:
-                cloud.append(escaped_skill)
-            else:
-                technologies.append(escaped_skill)
-
-        # Ensure mandatory sections are never empty by falling back to curated defaults if none matched
-        if not languages:
-            languages = [self.escape_latex(s) for s in ["C#", "Java", "Python", "TypeScript", "JavaScript", "C++", "SQL", "Bash", "HTML/CSS"]]
-        if not frameworks:
-            frameworks = [self.escape_latex(s) for s in [".NET / ASP.NET Core", "React", "Blazor", "Entity Framework"]]
-        if not databases:
-            databases = [self.escape_latex(s) for s in ["SQL Server", "PostgreSQL", "MongoDB", "Redis", "BigQuery", "Firestore / Firebase"]]
-        if not cloud:
-            cloud = [self.escape_latex(s) for s in ["Azure", "AWS", "DigitalOcean"]]
-        if not technologies:
-            technologies = [self.escape_latex(s) for s in ["Docker", "Kubernetes", "Azure DevOps", "GitHub Actions", "Git", "Bicep", "ARM Templates", "REST APIs", "Microservices", "Event-Driven Architecture"]]
+        skill_categories_data = []
+        for cat in category_order:
+            skill_categories_data.append({
+                "name": self.escape_latex(cat),
+                "skills_str": ", ".join(category_skills[cat])
+            })
 
         rendered = template.render(
             contact_info=contact_data,
@@ -182,10 +157,6 @@ class LatexRenderer:
             education=education_data,
             selected_experiences=experiences_data,
             projects=projects_data,
-            languages=", ".join(languages),
-            frameworks=", ".join(frameworks),
-            databases=", ".join(databases),
-            cloud=", ".join(cloud),
-            technologies=", ".join(technologies)
+            skill_categories=skill_categories_data
         )
         return rendered

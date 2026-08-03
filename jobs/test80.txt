@@ -1,0 +1,44 @@
+# NovaGrid Technologies Ltd. – Senior Backend Software Engineer (.NET & Azure)
+
+## About the Role
+
+We are seeking a Senior Backend Software Engineer to join our Cloud Platform Engineering team. In this role, you will design, develop, and optimize scalable backend services, cloud-native applications, and distributed systems that power enterprise business platforms. You will collaborate with software engineers, cloud architects, DevOps engineers, and product managers to deliver secure, high-performance solutions built on Microsoft Azure.
+
+## Key Responsibilities
+
+* Design, develop, and maintain enterprise backend applications using C#, .NET, and ASP.NET Core.
+* Build and optimize RESTful APIs supporting high-volume business-critical applications.
+* Develop cloud-native services using Microsoft Azure, Azure Functions, Azure Service Bus, and Azure Logic Apps.
+* Design and implement microservices and event-driven architectures for distributed systems.
+* Optimize SQL Server databases through indexing, query tuning, stored procedures, and performance analysis.
+* Integrate enterprise systems using OAuth 2.0, Microsoft Graph API, and secure API authentication.
+* Automate infrastructure deployment using Bicep and Infrastructure as Code principles.
+* Build and maintain CI/CD pipelines using Azure DevOps.
+* Containerize backend applications using Docker and Azure Container Instances while supporting future Kubernetes deployments.
+* Monitor application health, troubleshoot production incidents, and participate in on-call support rotations.
+* Collaborate with cross-functional Agile teams throughout the Software Development Life Cycle (SDLC).
+* Produce technical documentation, code reviews, and engineering best practices to improve software quality and maintainability.
+
+## Qualifications & Skills
+
+* 5+ years of experience in backend software development using C# and .NET.
+* Strong experience with ASP.NET Core and REST API development.
+* Hands-on experience with Microsoft Azure cloud services.
+* Experience developing Azure Functions, Azure Service Bus, Azure Logic Apps, and cloud integrations.
+* Strong knowledge of SQL Server, database optimization, indexing, and stored procedures.
+* Experience building microservices and distributed systems.
+* Knowledge of OAuth 2.0, Azure Entra ID, and enterprise authentication mechanisms.
+* Experience with Azure DevOps, Git, CI/CD pipelines, and Infrastructure as Code (Bicep or ARM Templates).
+* Familiarity with Docker, Kubernetes, and container orchestration platforms.
+* Experience supporting production environments, incident management, and application monitoring.
+* Strong understanding of Agile, Scrum, software architecture, and engineering best practices.
+* Bachelor's degree in Computer Science, Software Engineering, Information Technology, or a related technical discipline.
+
+## Preferred Skills
+
+* Experience with PostgreSQL or MongoDB.
+* Familiarity with AWS cloud services.
+* Knowledge of event-driven architectures and message queuing systems.
+* Experience implementing high-availability and fault-tolerant backend services.
+* Exposure to monitoring tools such as Azure Monitor, Application Insights, or Grafana.
+* Understanding of secure software development, cloud networking, and enterprise integration patterns.

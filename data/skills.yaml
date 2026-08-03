@@ -8,151 +8,89 @@ skills:
     display: "Java"
     aliases: ["java", "jdk", "openjdk", "java 17", "java 21"]
     category: "Languages"
+  - id: sql
+    display: "SQL"
+    aliases: ["sql", "tsql", "t-sql", "relational database", "raw sql"]
+    category: "Languages"
   - id: python
     display: "Python"
     aliases: ["python", "python3", "fastapi"]
-    category: "Languages"
-  - id: typescript
-    display: "TypeScript"
-    aliases: ["typescript", "ts"]
-    category: "Languages"
-  - id: javascript
-    display: "JavaScript"
-    aliases: ["javascript", "js", "ecmascript"]
     category: "Languages"
   - id: cpp
     display: "C++"
     aliases: ["c++", "cpp", "cplusplus"]
     category: "Languages"
-  - id: sql
-    display: "SQL"
-    aliases: ["sql", "tsql", "t-sql", "relational database", "raw sql"]
-    category: "Languages"
-  - id: bash
-    display: "Bash"
-    aliases: ["bash", "shell", "sh", "zsh"]
+  - id: js_ts
+    display: "JavaScript/ TypeScript"
+    aliases: ["javascript", "js", "typescript", "ts", "ecmascript"]
     category: "Languages"
   - id: html_css
     display: "HTML/CSS"
     aliases: ["html", "css", "html5", "css3", "html/css"]
     category: "Languages"
 
-  # Frameworks
-  - id: dotnet_aspnet
-    display: ".NET / ASP.NET Core"
+  # Tools
+  - id: aspnet_core
+    display: "ASP.NET Core"
     aliases: [".net", "asp.net core", ".net core", "asp.net", "dotnet", "dotnet core"]
-    category: "Frameworks"
-  - id: react
-    display: "React"
-    aliases: ["react", "react.js", "reactjs"]
-    category: "Frameworks"
+    category: "Tools"
+  - id: docker
+    display: "Docker"
+    aliases: ["docker", "containerization", "containers"]
+    category: "Tools"
   - id: blazor
     display: "Blazor"
     aliases: ["blazor", "blazor webassembly", "blazor server"]
-    category: "Frameworks"
+    category: "Tools"
   - id: entity_framework
     display: "Entity Framework"
     aliases: ["entity framework", "ef core", "ef", "orm"]
-    category: "Frameworks"
-
-  # Cloud
-  - id: azure
-    display: "Azure"
-    aliases: ["azure", "microsoft azure", "service bus", "serverless"]
-    category: "Cloud"
-  - id: aws
-    display: "AWS"
-    aliases: ["aws", "amazon web services", "ec2", "s3", "eks"]
-    category: "Cloud"
-  - id: digitalocean
-    display: "DigitalOcean"
-    aliases: ["digitalocean", "droplets"]
-    category: "Cloud"
+    category: "Tools"
+  - id: restful_apis
+    display: "RESTful APIs"
+    aliases: ["rest apis", "restful apis", "rest api", "rest", "web api", "apis"]
+    category: "Tools"
+  - id: azure_devops
+    display: "Azure DevOps"
+    aliases: ["azure devops", "vsts", "tfs"]
+    category: "Tools"
+  - id: github_actions
+    display: "GitHub Actions"
+    aliases: ["github actions", "github-actions"]
+    category: "Tools"
 
   # Databases
-  - id: sql_server
-    display: "SQL Server"
+  - id: ms_sql
+    display: "MS SQL"
     aliases: ["sql server", "ms sql", "microsoft sql server", "mssql", "t-sql"]
-    category: "Databases"
-  - id: postgresql
-    display: "PostgreSQL"
-    aliases: ["postgresql", "postgres", "psql"]
-    category: "Databases"
-  - id: mongodb
-    display: "MongoDB"
-    aliases: ["mongodb", "mongo", "nosql"]
-    category: "Databases"
-  - id: redis
-    display: "Redis"
-    aliases: ["redis", "caching", "in-memory cache"]
     category: "Databases"
   - id: bigquery
     display: "BigQuery"
     aliases: ["bigquery", "google bigquery"]
+    category: "Databases"
+  - id: postgresql
+    display: "PostgreSQL"
+    aliases: ["postgresql", "postgres", "psql"]
     category: "Databases"
   - id: firestore_firebase
     display: "Firestore / Firebase"
     aliases: ["firestore", "firebase", "google firestore"]
     category: "Databases"
 
-  # Technologies
-  - id: docker
-    display: "Docker"
-    aliases: ["docker", "containerization", "containers"]
-    category: "Technologies"
+  # Cloud Services
+  - id: azure
+    display: "Azure"
+    aliases: ["azure", "microsoft azure", "service bus", "serverless"]
+    category: "Cloud Services"
+  - id: aws
+    display: "AWS"
+    aliases: ["aws", "amazon web services", "ec2", "s3", "eks"]
+    category: "Cloud Services"
+  - id: digitalocean
+    display: "DigitalOcean"
+    aliases: ["digitalocean", "droplets"]
+    category: "Cloud Services"
   - id: kubernetes
     display: "Kubernetes"
     aliases: ["kubernetes", "k8s", "eks", "aks", "doks"]
-    category: "Technologies"
-  - id: azure_devops
-    display: "Azure DevOps"
-    aliases: ["azure devops", "vsts", "tfs"]
-    category: "Technologies"
-  - id: github_actions
-    display: "GitHub Actions"
-    aliases: ["github actions", "github-actions"]
-    category: "Technologies"
-  - id: cicd
-    display: "CI/CD Pipelines"
-    aliases: ["ci/cd", "ci/cd pipelines", "continuous integration", "deployment pipelines"]
-    category: "Technologies"
-  - id: git
-    display: "Git"
-    aliases: ["git", "github", "gitlab", "version control"]
-    category: "Technologies"
-  - id: bicep
-    display: "Bicep"
-    aliases: ["bicep", "azure bicep", "iac", "infrastructure as code"]
-    category: "Technologies"
-  - id: arm_templates
-    display: "ARM Templates"
-    aliases: ["arm templates", "arm", "azure resource manager"]
-    category: "Technologies"
-  - id: rest_api
-    display: "REST APIs"
-    aliases: ["rest apis", "restful apis", "rest api", "rest", "web api", "apis"]
-    category: "Technologies"
-  - id: microservices
-    display: "Microservices"
-    aliases: ["microservices", "microservices architecture"]
-    category: "Technologies"
-  - id: kafka
-    display: "Apache Kafka"
-    aliases: ["kafka", "confluent kafka", "event streaming", "pubsub", "message queues"]
-    category: "Technologies"
-  - id: event_driven
-    display: "Event-Driven Architecture"
-    aliases: ["event-driven architecture", "event-driven", "pubsub", "service bus", "asynchronous processing"]
-    category: "Technologies"
-  - id: iam_oauth
-    display: "OAuth / IAM & Security"
-    aliases: ["oauth", "oauth 2.0", "iam", "authentication", "authorization", "identity and access management"]
-    category: "Technologies"
-  - id: data_pipelines
-    display: "Data Processing Pipelines"
-    aliases: ["data pipelines", "data processing pipelines", "data processing", "large-scale datasets"]
-    category: "Technologies"
-  - id: serverless
-    display: "Serverless & Cloud Native"
-    aliases: ["serverless", "serverless computing", "cloud-native", "cloud native"]
-    category: "Technologies"
+    category: "Cloud Services"

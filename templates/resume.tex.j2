@@ -96,11 +96,9 @@
 \section{Technical Skills}
  \begin{itemize}[leftmargin=0.15in, label={}]
     \small{\item{
-     \textbf{Languages}{: {{ languages }}} \\
-     \textbf{Frameworks}{: {{ frameworks }}} \\
-     \textbf{Databases}{: {{ databases }}} \\
-     \textbf{Cloud}{: {{ cloud }}} \\
-     \textbf{Technologies}{: {{ technologies }}}
+      {% for cat in skill_categories %}
+      \textbf{ {{ cat.name }} }{: {{ cat.skills_str }}} {% if not loop.last %} \\ {% endif %}
+      {% endfor %}
     }}
  \end{itemize}
 

@@ -62,7 +62,8 @@ class SkillMatcher:
             "applications team", "development experience", "net asp.net",
             "solutions", "application", "development", "creative", "creative applications",
             "frontend applications", "frontend software", "user experiences", "user experience",
-            "build", "building", "modern", "component", "components", "rendering", "client", "frameworks"
+            "build", "building", "modern", "component", "components", "rendering", "client", "frameworks",
+            "deploy", "indexing", "enterprise systems", "code principles", "call", "on-call"
         }
 
         for jd_skill in jd_skills:

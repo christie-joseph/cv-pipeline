@@ -1,0 +1,25 @@
+About the Role
+
+As a Software Engineer (Mid), you'll independently deliver significant features end-to-end across systems that the whole business relies on, seeking support as needed while continuing to build your knowledge of design principles, testing methods and Redgate's internal systems.
+
+● Work across systems spanning data, security, purchasing, licensing, identity, authentication and usage, supporting both product engineering teams and the wider business
+
+● Real scope to influence architectural decisions and deepen your understanding of how Redgate's platform is designed and operated
+
+● Take ownership of production issues, from investigation through to resolution and prevention
+
+● Exposure to a broad tech stack spanning C#/.NET, React, Azure, event-driven architecture and observability tooling
+
+● A role structured around learning while delivering: broadening your technical skills and system knowledge while contributing real value from day one
+
+What Makes You a Great Fit
+
+● Solid experience with modern C#/.NET, SQL, source control and CI/CD pipelines, and confidence applying design principles and architectural patterns with an understanding of trade-offs in context
+
+● A bias for simplicity and maintainability, backed by strong engineering practices including unit testing, code review, debugging and safe change management
+
+● Awareness of distributed systems and operational risk, such as timeouts, retries, versioning and partial failures, and the judgement to apply this when changing shared or production systems
+
+● Ability to investigate production and support issues using logs, telemetry, database queries and service-level diagnostics
+
+● Strong communication skills, in person and in writing, particularly when explaining technical findings, risks or trade-offs to engineering and product partners
