@@ -13,6 +13,17 @@ def find_latex_compiler() -> Optional[str]:
     for cmd in ["tectonic", "pdflatex", "latexmk"]:
         if shutil.which(cmd):
             return cmd
+    # Check common MiKTeX install paths on Windows if PATH is not refreshed yet
+    if os.name == "nt":
+        possible_paths = [
+            os.path.expanduser(r"~\AppData\Local\Programs\MiKTeX\miktex\bin\x64\pdflatex.exe"),
+            r"C:\Program Files\MiKTeX\miktex\bin\x64\pdflatex.exe",
+            r"C:\Program Files (x86)\MiKTeX\miktex\bin\x64\pdflatex.exe",
+            os.path.expanduser(r"~\AppData\Local\Programs\MiKTeX 2.9\miktex\bin\x64\pdflatex.exe"),
+        ]
+        for path in possible_paths:
+            if os.path.exists(path):
+                return path
     return None
 
 
@@ -36,10 +47,10 @@ def compile_pdf(latex_string: str) -> Optional[bytes]:
         try:
             if compiler == "tectonic":
                 cmd = [compiler, tex_path]
-            elif compiler == "pdflatex":
-                cmd = ["pdflatex", "-interaction=nonstopmode", "-output-directory", temp_dir, tex_path]
+            elif "pdflatex" in compiler:
+                cmd = [compiler, "-interaction=nonstopmode", "-output-directory", temp_dir, tex_path]
             else:  # latexmk
-                cmd = ["latexmk", "-pdf", "-interaction=nonstopmode", f"-output-dir={temp_dir}", tex_path]
+                cmd = [compiler, "-pdf", "-interaction=nonstopmode", f"-output-dir={temp_dir}", tex_path]
 
             subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, cwd=temp_dir)
 
@@ -54,14 +65,12 @@ def compile_pdf(latex_string: str) -> Optional[bytes]:
 
 
 def open_pdf_in_viewer(pdf_bytes: bytes):
-    """Saves PDF bytes to an OS temp file and opens it in default PDF viewer."""
+    """Saves PDF bytes to OS temp directory and opens it in default PDF viewer/browser."""
     if not pdf_bytes:
         return
 
-    temp_dir = tempfile.mkdtemp()
-    atexit.register(shutil.rmtree, temp_dir, ignore_errors=True)
-
-    temp_pdf_path = os.path.join(temp_dir, "resume.pdf")
+    # Use a fixed file path in OS temp dir to prevent premature atexit deletion before browser finishes launching
+    temp_pdf_path = os.path.join(tempfile.gettempdir(), "cv_pipeline_tailored_resume.pdf")
 
     with open(temp_pdf_path, "wb") as f:
         f.write(pdf_bytes)
