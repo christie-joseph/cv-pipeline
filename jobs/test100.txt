@@ -1,0 +1,66 @@
+Nexora Technologies — Senior Backend Software Engineer, Cloud Platforms
+About the Role
+
+We are seeking a Senior Backend Software Engineer to design, develop, and maintain scalable enterprise applications, cloud-native backend services, and distributed data processing systems. You will build secure REST APIs, optimize high-performance backend solutions, modernize legacy applications, and support cloud deployments using Azure, AWS, Docker, and Kubernetes.
+
+The ideal candidate has strong experience with C#, ASP.NET Core, SQL Server, REST APIs, cloud platforms, CI/CD pipelines, and backend system optimization.
+
+Key Responsibilities
+Design, develop, and maintain backend applications using C#, ASP.NET Core, .NET, RESTful APIs, and Entity Framework Core.
+Architect scalable backend services, distributed systems, and asynchronous processing workflows.
+Develop secure API integrations using OAuth 2.0, authentication, authorization, and IAM principles.
+Build and optimize enterprise data pipelines for validating, transforming, aggregating, and publishing large-scale datasets.
+Modernize legacy applications by migrating systems to scalable cloud-based architectures.
+Improve application performance through:
+SQL query optimization
+Database profiling
+API performance tuning
+Code optimization
+Develop containerized applications using Docker and deploy cloud solutions using Kubernetes.
+Build and maintain CI/CD pipelines using Azure DevOps and GitHub Actions.
+Troubleshoot production issues and improve application reliability, scalability, and performance.
+Collaborate with engineering teams on system design, code reviews, and software delivery.
+Qualifications & Skills
+4+ years of professional software development experience building production backend applications.
+Strong proficiency in:
+C#
+ASP.NET Core
+.NET
+REST APIs
+SQL
+Python
+Experience with:
+Enterprise application development
+Backend services
+Distributed systems
+Data processing pipelines
+API integrations
+Strong database experience with:
+Microsoft SQL Server
+PostgreSQL
+Query optimization
+Stored procedures
+Database design
+Experience with cloud technologies:
+Microsoft Azure
+AWS
+DigitalOcean
+Hands-on experience with:
+Docker
+Kubernetes
+Git
+Azure DevOps
+GitHub Actions
+CI/CD pipelines
+Knowledge of:
+Microservices architecture
+Event-driven architecture
+Serverless computing
+Infrastructure as Code (IaC)
+Cloud-native development
+Experience with secure software development practices, including:
+OAuth
+Authentication
+Authorization
+Identity and Access Management
+Experience working with Agile/Scrum methodologies and full Software Development Lifecycle (SDLC).

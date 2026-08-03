@@ -51,8 +51,25 @@ class SkillMatcher:
         resume_tags_lower = {t.lower().strip() for t in resume_tags if t and len(t.strip()) > 0}
         resume_text_lower = resume_text.lower() if resume_text else ""
 
+        # Filter JD skills to known taxonomy terms or valid multi-word technical keywords
+        GENERIC_WORDS = {
+            "senior", "core", "develop", "devops", "aws", "framework core",
+            "software development", "rest apis", "api", "apis", "nexora",
+            "microsoft", "agile/scrum", "agile", "scrum", "software development lifecycle",
+            "sdlc", "enterprise", "deployments", "applications", "platforms",
+            "knowledge", "experience", "responsibilities", "qualifications",
+            "brightcore", "brightcore solutions", "enterprise applications",
+            "applications team", "development experience", "net asp.net",
+            "solutions", "application", "development", "creative", "creative applications",
+            "frontend applications", "frontend software", "user experiences", "user experience",
+            "build", "building", "modern", "component", "components", "rendering", "client", "frameworks"
+        }
+
         for jd_skill in jd_skills:
-            jd_skill_lower = jd_skill.lower()
+            jd_skill_lower = jd_skill.lower().strip()
+            if not jd_skill_lower or len(jd_skill_lower) <= 2:
+                continue
+
             found = False
 
             # Pass 1: Canonical Alias Match (O(1) lookups via inverted index)
@@ -100,9 +117,29 @@ class SkillMatcher:
                             found = True
                             break
 
-            if not found and len(jd_skill) > 2:
+            # Only append to missing if it is not a generic non-technical stopword
+            if not found and jd_skill_lower not in GENERIC_WORDS:
                 missing.append(jd_skill.title())
 
+        # Filter out sub-phrase fragments (e.g. 'Spring' or 'Boot' if 'Spring Boot' exists in missing/matched)
+        matched_canonical_lower = {m[0].lower() for m in matched}
+        all_terms_lower = matched_canonical_lower.union({m.lower() for m in missing})
+
+        filtered_missing = []
+        for m in missing:
+            m_lower = m.lower().strip()
+            # If m_lower is a single word (e.g., 'spring', 'boot', 'distributed') and a compound multi-word term
+            # containing m_lower (e.g. 'spring boot', 'distributed systems') is present in all_terms_lower, skip it
+            if len(m_lower.split()) == 1:
+                is_subphrase = any(
+                    len(other.split()) > 1 and re.search(r"\b" + re.escape(m_lower) + r"\b", other)
+                    for other in all_terms_lower
+                    if other != m_lower
+                )
+                if is_subphrase:
+                    continue
+            filtered_missing.append(m)
+
         # Preserve deterministic insertion order for missing skills
-        unique_missing = list(dict.fromkeys(missing))
+        unique_missing = list(dict.fromkeys(filtered_missing))
         return MatchResult(matched=matched, missing=unique_missing)

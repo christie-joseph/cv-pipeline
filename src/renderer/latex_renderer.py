@@ -68,10 +68,12 @@ class LatexRenderer:
         if resume.contact_info.phone:
             contact_parts.append(self.escape_latex(resume.contact_info.phone))
         if resume.contact_info.linkedin:
-            esc_li = self.escape_latex(resume.contact_info.linkedin)
+            li_clean = re.sub(r"^https?://", "", resume.contact_info.linkedin)
+            esc_li = self.escape_latex(li_clean)
             contact_parts.append(f"\\href{{https://{esc_li}}}{{\\underline{{{esc_li}}}}}")
         if resume.contact_info.github:
-            esc_gh = self.escape_latex(resume.contact_info.github)
+            gh_clean = re.sub(r"^https?://", "", resume.contact_info.github)
+            esc_gh = self.escape_latex(gh_clean)
             contact_parts.append(f"\\href{{https://{esc_gh}}}{{\\underline{{{esc_gh}}}}}")
             
         contact_data = {

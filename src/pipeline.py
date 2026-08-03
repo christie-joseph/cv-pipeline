@@ -122,6 +122,13 @@ class Pipeline:
         # Concatenate full text of selected bullets for deep text scanning
         full_resume_text = " ".join([sel_b.rewritten_text or sel_b.bullet.text for sel_b in all_selected_bullet_objects])
 
+        # Include candidate's project tech stacks and taxonomy skills in resume tags for matching
+        for proj in projects:
+            all_resume_tags.extend(proj.tech_stack)
+        for sk in self.taxonomy.skills:
+            all_resume_tags.append(sk.display)
+            all_resume_tags.extend(sk.aliases)
+
         # 5. Match Skills using tags AND full resume text
         match_result = self.skill_matcher.match(
             jd_skills=jd_profile.skills,

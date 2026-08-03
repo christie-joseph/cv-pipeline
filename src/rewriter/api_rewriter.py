@@ -84,6 +84,9 @@ class ApiRewriter(BaseRewriter):
 
             cfg = provider_client.config
             try:
+                from rich import print as rprint
+                rprint(f"[cyan][*] Trying Cloud API Provider (Priority {cfg.priority}): {cfg.name}...[/cyan]")
+                
                 # Scale max_tokens proportionally to number of bullets
                 batch_max_tokens = max(cfg.max_tokens, len(bullets) * 120)
                 
@@ -109,17 +112,22 @@ class ApiRewriter(BaseRewriter):
                         try:
                             parsed_list = json.loads(content)
                             if isinstance(parsed_list, list) and len(parsed_list) == len(bullets):
+                                rprint(f"[green][+] Cloud API Provider {cfg.name} succeeded![/green]")
                                 return [str(item).strip() for item in parsed_list], cfg.name
                             elif isinstance(parsed_list, list) and len(parsed_list) > 0:
                                 # Fallback padding/truncation if LLM returned slightly different list length
                                 result = [str(item).strip() for item in parsed_list[:len(bullets)]]
                                 while len(result) < len(bullets):
                                     result.append(bullets[len(result)])
+                                rprint(f"[green][+] Cloud API Provider {cfg.name} succeeded (with length adjustment)![/green]")
                                 return result, cfg.name
                         except json.JSONDecodeError as je:
+                            rprint(f"[yellow][!] Cloud API Provider {cfg.name} returned invalid JSON. Trying next...[/yellow]")
                             logger.warning(f"Failed to parse JSON batch from '{cfg.name}': {je}. Content: {content[:100]}...")
 
             except Exception as e:
+                from rich import print as rprint
+                rprint(f"[yellow][!] Cloud API Provider '{cfg.name}' failed. Trying next provider...[/yellow]")
                 logger.warning(f"Cloud API provider '{cfg.name}' (priority {cfg.priority}, model {cfg.api_model}) failed batch request: {e}. Trying next priority provider...")
                 last_error = e
 

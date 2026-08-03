@@ -1,0 +1,21 @@
+PixelForge Studios - Frontend Software Engineer, Creative Applications
+
+**About the Role:**
+We are looking for a Frontend Software Engineer to join our Creative Applications team. In this role, you will design and build responsive, high-performance web interfaces and interactive user experiences powering modern digital products.
+
+**Key Responsibilities:**
+
+* Develop scalable frontend applications using React, Next.js, TypeScript, and modern JavaScript frameworks.
+* Build reusable UI components and maintain frontend architecture using component-driven development practices.
+* Optimize browser rendering performance, client-side application behavior, and responsive user experiences.
+* Implement state management solutions using Redux and integrate frontend applications with GraphQL APIs.
+* Collaborate with UX designers and product teams to deliver accessible, user-focused web experiences.
+
+**Qualifications & Skills:**
+
+* 3+ years of experience building production frontend applications.
+* Strong proficiency in React, Next.js, TypeScript, JavaScript ES6+, HTML5, and CSS3.
+* Hands-on experience with Redux, GraphQL, WebSockets, Jest, Cypress, and frontend testing frameworks.
+* Experience with frontend build tools including Webpack, Vite, and modern development workflows.
+* Experience building responsive applications with accessibility standards (WCAG).
+* BS/MS in Computer Science, Software Engineering, or related technical field.

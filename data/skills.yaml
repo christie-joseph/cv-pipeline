@@ -102,7 +102,7 @@ skills:
     category: "Technologies"
   - id: kubernetes
     display: "Kubernetes"
-    aliases: ["kubernetes", "k8s", "eks", "aks"]
+    aliases: ["kubernetes", "k8s", "eks", "aks", "doks"]
     category: "Technologies"
   - id: azure_devops
     display: "Azure DevOps"
@@ -110,7 +110,11 @@ skills:
     category: "Technologies"
   - id: github_actions
     display: "GitHub Actions"
-    aliases: ["github actions", "ci/cd", "continuous integration"]
+    aliases: ["github actions", "github-actions"]
+    category: "Technologies"
+  - id: cicd
+    display: "CI/CD Pipelines"
+    aliases: ["ci/cd", "ci/cd pipelines", "continuous integration", "deployment pipelines"]
     category: "Technologies"
   - id: git
     display: "Git"
@@ -118,7 +122,7 @@ skills:
     category: "Technologies"
   - id: bicep
     display: "Bicep"
-    aliases: ["bicep", "azure bicep", "iac"]
+    aliases: ["bicep", "azure bicep", "iac", "infrastructure as code"]
     category: "Technologies"
   - id: arm_templates
     display: "ARM Templates"
@@ -126,7 +130,7 @@ skills:
     category: "Technologies"
   - id: rest_api
     display: "REST APIs"
-    aliases: ["rest apis", "restful apis", "rest api", "rest", "web api"]
+    aliases: ["rest apis", "restful apis", "rest api", "rest", "web api", "apis"]
     category: "Technologies"
   - id: microservices
     display: "Microservices"
@@ -138,5 +142,17 @@ skills:
     category: "Technologies"
   - id: event_driven
     display: "Event-Driven Architecture"
-    aliases: ["event-driven architecture", "event-driven", "pubsub", "service bus"]
+    aliases: ["event-driven architecture", "event-driven", "pubsub", "service bus", "asynchronous processing"]
+    category: "Technologies"
+  - id: iam_oauth
+    display: "OAuth / IAM & Security"
+    aliases: ["oauth", "oauth 2.0", "iam", "authentication", "authorization", "identity and access management"]
+    category: "Technologies"
+  - id: data_pipelines
+    display: "Data Processing Pipelines"
+    aliases: ["data pipelines", "data processing pipelines", "data processing", "large-scale datasets"]
+    category: "Technologies"
+  - id: serverless
+    display: "Serverless & Cloud Native"
+    aliases: ["serverless", "serverless computing", "cloud-native", "cloud native"]
     category: "Technologies"

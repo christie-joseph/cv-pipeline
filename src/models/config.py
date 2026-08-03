@@ -130,7 +130,7 @@ class OutputConfig(BaseModel):
     open_pdf: bool = True
     show_ats_report: bool = True
     show_diff: bool = True
-    show_manifest: bool = True
+    show_manifest: bool = False
     copy_to_clipboard: bool = False
     debug: bool = False
 

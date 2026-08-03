@@ -70,7 +70,7 @@ def main():
     from rich.style import Style
 
     console = Console()
-    console.print("\n[bold cyan]🚀 CV Pipeline:[/] [dim]In-Memory LaTeX Resume Tailoring Engine[/dim]\n")
+    console.print("\n[bold cyan][*] CV Pipeline:[/] [dim]In-Memory LaTeX Resume Tailoring Engine[/dim]\n")
 
     result = None
     with Progress(
@@ -89,7 +89,7 @@ def main():
         result = pipeline.run(jd_text=jd_text, company_profile_name=args.company)
         progress.update(task, advance=70, description="Generating Resume & Formatting LaTeX...")
 
-    console.print(Panel("[bold green]✔ Resume Tailoring Complete![/bold green]", border_style="green"))
+    console.print(Panel("[bold green][+] Resume Tailoring Complete![/bold green]", border_style="green"))
 
     # Output Reports if requested or configured
     if args.ats or config.output.show_ats_report:
@@ -101,12 +101,6 @@ def main():
     if args.manifest or config.output.show_manifest:
         console.print("\n" + result.manifest + "\n")
 
-    # Output LaTeX string
-    console.print("\n[bold yellow]📄 GENERATED LATEX CODE:[bold yellow]")
-    print("=" * 60)
-    print(result.latex_string)
-    print("=" * 60)
-
     # Copy to clipboard if requested or if PDF compilation is not available
     should_copy_clipboard = args.copy or config.output.copy_to_clipboard or not result.pdf_bytes
     if should_copy_clipboard:
@@ -114,15 +108,22 @@ def main():
             import pyperclip
             pyperclip.copy(result.latex_string)
             if not result.pdf_bytes:
-                console.print("\n[bold green]📋 [PDF Compiler Missing] LaTeX code automatically copied to clipboard for instant pasting![/bold green]")
+                console.print("\n[bold green][+] [PDF Compiler Missing] LaTeX code automatically copied to clipboard for instant pasting![/bold green]")
             else:
-                console.print("\n[bold green]📋 [+] LaTeX code copied to clipboard![/bold green]")
+                console.print("\n[bold green][+] LaTeX code copied to clipboard![/bold green]")
         except Exception:
             pass
 
+    # Print raw LaTeX only if debug mode is active or explicitly requested via --copy
+    if is_debug or args.copy:
+        console.print("\n[bold yellow][+] GENERATED LATEX CODE:[bold yellow]")
+        print("=" * 60)
+        print(result.latex_string)
+        print("=" * 60)
+
     # Open PDF in default viewer if compiled
     if result.pdf_bytes and config.output.open_pdf:
-        console.print("[bold cyan]📄 [+] Ephemeral PDF compiled! Opening in system PDF viewer...[/bold cyan]")
+        console.print("[bold cyan][+] Ephemeral PDF compiled! Opening in system PDF viewer...[/bold cyan]")
         open_pdf_in_viewer(result.pdf_bytes)
 
 

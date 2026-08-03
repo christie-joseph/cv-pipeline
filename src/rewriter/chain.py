@@ -68,6 +68,8 @@ class RewriterChain:
         # Tier A: Cloud LLM API Pool Batch
         if self.option_a.is_available():
             try:
+                from rich import print as rprint
+                rprint("[bold cyan][*] Attempting Rewriter Option A (Cloud LLM API Pool)...[/bold cyan]")
                 res_list, provider_name = self.option_a.rewrite_batch(bullets, jd_keywords, prompt)
                 
                 # Check guardrails per bullet
@@ -80,6 +82,7 @@ class RewriterChain:
                         final_results.append(rewritten)
                         final_tiers.append(f"Option A (Cloud API: {provider_name})")
                     else:
+                        rprint(f"[yellow][!] Option A bullet {idx+1} failed guardrails. Falling back to Option B/C...[/yellow]")
                         logger.warning(f"Option A bullet {idx+1} failed guardrails. Falling back...")
                         failed_indices.append(idx)
                         final_results.append(None)
@@ -99,6 +102,8 @@ class RewriterChain:
                 return final_results, final_tiers
 
             except Exception as e:
+                from rich import print as rprint
+                rprint(f"[yellow][!] Option A (Cloud API Pool) failed: {e}. Falling back to Option B/C...[/yellow]")
                 logger.warning(f"Option A Cloud API pool batch failed: {e}. Falling back to Option B/C...")
 
         # Fallback for all bullets if Option A fails
@@ -112,15 +117,21 @@ class RewriterChain:
 
     def _rewrite_single_fallback(self, bullet_text: str, jd_keywords: List[str], prompt: str) -> Tuple[str, str]:
         """Fallback for a single bullet through Option B -> Option C."""
+        from rich import print as rprint
         if self.option_b.is_available():
             try:
+                rprint("[cyan][*] Attempting Rewriter Option B (Local Ollama)...[/cyan]")
                 res = self.option_b.rewrite(bullet_text, jd_keywords, prompt)
                 if _validate_rewrite_guardrails(bullet_text, res):
+                    rprint("[green][+] Option B (Local Ollama) succeeded![/green]")
                     return res, "Option B (Local Ollama GPU)"
                 else:
+                    rprint("[yellow][!] Option B failed guardrails. Falling back to Option C (Rule Engine)...[/yellow]")
                     logger.warning("Option B failed guardrails. Falling back to Option C...")
             except Exception as e:
+                rprint(f"[yellow][!] Option B (Ollama) failed: {e}. Falling back to Option C (Rule Engine)...[/yellow]")
                 logger.warning(f"Option B (Ollama) failed: {e}. Falling back to Option C...")
 
+        rprint("[cyan][*] Using Rewriter Option C (Deterministic Rule Engine fallback)...[/cyan]")
         res = self.option_c.rewrite(bullet_text, jd_keywords, prompt)
         return res, "Option C (Rule Engine)"
