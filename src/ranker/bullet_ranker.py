@@ -38,6 +38,12 @@ def select_bullets_mmr(
     else:
         relevance_scores, sim_matrix = _tfidf_scores(bullet_texts, jd_text)
 
+    # --- Apply FAANG Heuristic Multipliers ---
+    from .faang_scorer import score_bullet_faang
+    for idx, bullet_text in enumerate(bullet_texts):
+        faang_mult = score_bullet_faang(bullet_text)
+        relevance_scores[idx] *= faang_mult
+
     # If count is <= max_k, return all bullets with their calculated real relevance scores
     if len(bullets) <= max_k:
         result = []
