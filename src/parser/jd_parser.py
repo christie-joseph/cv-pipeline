@@ -1,11 +1,13 @@
 import re
 import spacy
-import numpy as np
-from typing import List
+import logging
+from typing import List, Dict, Set
 from pathlib import Path
 from ..models.jd_profile import JDProfile
-
 from ..models.experience import SkillTaxonomy
+from .tech_patterns import TECH_REGEX_PATTERNS, WORK_DOMAIN_PATTERNS
+
+logger = logging.getLogger(__name__)
 
 NON_SKILL_STOPWORDS = {
     # JD sections
@@ -78,8 +80,6 @@ NON_SKILL_STOPWORDS = {
     "troubleshoot",
     "troubleshoot production issues",
     "aggregating",
-    "familiarity",
-    
 
     # Generic soft skills
     "communication",
@@ -115,18 +115,13 @@ NON_SKILL_STOPWORDS = {
     "computer science",
     "software engineering",
     "information technology",
-    "software engineers",
-    "Devops Engineers",
-    "Product Managers",
     "science",
     "field",
     "mid",
     "mid-level",
     "technical",
 
-    # Formatting artifacts
-    "github actions\n",
-    "query\ngithub actions\n",
+    # Formatting artifacts & generic words
     "query"
 }
 
@@ -146,10 +141,11 @@ class JDParser:
             self.nlp = spacy.load("en_core_web_sm")
         except Exception:
             try:
+                logger.warning("spaCy model 'en_core_web_sm' not found. Attempting download...")
                 spacy.cli.download("en_core_web_sm")
                 self.nlp = spacy.load("en_core_web_sm")
-            except Exception:
-                # Fallback to blank model if offline and download fails
+            except Exception as e:
+                logger.warning(f"Could not download or load en_core_web_sm: {e}. Falling back to blank english model.")
                 self.nlp = spacy.blank("en")
 
     def parse(self, text: str) -> JDProfile:
@@ -175,12 +171,13 @@ class JDParser:
                             org_entities.add(ent.text.lower().strip())
                 except Exception:
                     pass
-                for part in re.split(r"\W+", company_header):
-                    if len(part) > 2:
-                        org_entities.add(part.lower())
 
         # Match common clean target roles
-        role_match = re.search(r"\b((?:Senior\s+|Staff\s+|Principal\s+|Lead\s+|Junior\s+)?(?:\w+\s+)?(?:Full\s*Stack|Backend|Frontend|Software|Data|DevOps|Cloud|Machine\s+Learning)\s+(?:Engineer|Developer|Architect|Scientist))\b", text[:300], re.IGNORECASE)
+        role_match = re.search(
+            r"\b((?:Senior\s+|Staff\s+|Principal\s+|Lead\s+|Junior\s+)?(?:\w+\s+)?(?:Full\s*Stack|Backend|Frontend|Software|Data|DevOps|Cloud|Machine\s+Learning)\s+(?:Engineer|Developer|Architect|Scientist))\b",
+            text[:300],
+            re.IGNORECASE
+        )
         if role_match:
             role = role_match.group(1).title()
         elif re.search(r"\b(engineer|developer|architect|lead|analyst)\b", first_line, re.IGNORECASE):
@@ -196,7 +193,7 @@ class JDParser:
                 if phrase_match:
                     role = phrase_match.group(1).strip()
 
-        # Clean text for parsing: strip other markdown headers (lines starting with # or ##)
+        # Clean text for parsing: strip markdown headers (lines starting with # or ##)
         cleaned_lines = []
         for line in lines[1:]:
             line_str = line.strip()
@@ -209,31 +206,7 @@ class JDParser:
             cleaned_lines.append(line_str)
         cleaned_text = "\n".join(cleaned_lines)
 
-        # 2. Extract PROPNs via spaCy as a fallback for unknown skills
-        doc = self.nlp(cleaned_text)
-        spacy_kws = []
-        
-        # Pre-compile taxonomy lower-case display and aliases for O(1) checks
-        taxonomy_terms = set()
-        
-        # Combine user and global taxonomy
-        all_skills = []
-        if self.taxonomy:
-            all_skills.extend(self.taxonomy.skills)
-        if self.global_taxonomy:
-            all_skills.extend(self.global_taxonomy.skills)
-            
-        for skill in all_skills:
-            taxonomy_terms.add(skill.display.lower())
-            for a in skill.aliases:
-                taxonomy_terms.add(a.lower())
-
-        if hasattr(doc, "ents"):
-            for ent in doc.ents:
-                if ent.label_ == "PRODUCT":
-                    spacy_kws.append(ent.text.lower())
-
-        # 4. Regex for Seniority using word boundaries from the first line or role title
+        # 2. Extract Seniority
         seniority = None
         seniority_search_text = (role or first_line).lower()
         if re.search(r"\b(principal)\b", seniority_search_text):
@@ -249,52 +222,101 @@ class JDParser:
         elif re.search(r"\b(engineer|developer|architect|swe|fullstack|backend|frontend|programmer)\b", seniority_search_text):
             seniority = "Mid-Level"
 
-
-
-        # Clean extracted keywords: strip punctuation/newlines and drop multi-word noise sentences or company ORG names
-        clean_kws = []
-        
-        # 5. Direct Taxonomy Skill Scanning in raw text (User + Global)
-        taxonomy_kws = []
+        # 3. Multi-Pass Skill & Keyword Extraction
+        # Dictionary to store keyword: (base_weight, count)
+        extracted_scores: Dict[str, float] = {}
         text_lower_raw = text.lower()
-        
-        for skill in all_skills:
-            # Check display name or aliases using boundary-aware regex
-            terms_to_check = [skill.display.lower()] + [a.lower() for a in skill.aliases]
-            for term in terms_to_check:
-                left_b = r"\b" if re.match(r"^\w", term) else r"(?<!\w)"
-                right_b = r"\b" if re.search(r"\w$", term) else r"(?!\w)"
-                pattern = f"{left_b}{re.escape(term)}{right_b}"
-                if re.search(pattern, text_lower_raw):
-                    taxonomy_kws.append(skill.display)
-                    break
 
-        for kw in taxonomy_kws + spacy_kws:
-            # Strip leading markdown symbols (*, **, -, #) and whitespace
+        # Pass 1: Direct Taxonomy Scanning (User + Global)
+        # Deduplicate skills across taxonomies by display name
+        taxonomy_by_display: Dict[str, Set[str]] = {}
+        all_taxonomy_skills = []
+        if self.taxonomy:
+            all_taxonomy_skills.extend(self.taxonomy.skills)
+        if self.global_taxonomy:
+            all_taxonomy_skills.extend(self.global_taxonomy.skills)
+
+        for skill in all_taxonomy_skills:
+            if skill.display not in taxonomy_by_display:
+                taxonomy_by_display[skill.display] = set()
+            taxonomy_by_display[skill.display].add(skill.display.lower())
+            for a in skill.aliases:
+                taxonomy_by_display[skill.display].add(a.lower())
+
+        for display, terms in taxonomy_by_display.items():
+            # Combine terms into a single regex to avoid double-counting if alias and display both match the same span
+            sorted_terms = sorted(terms, key=len, reverse=True)
+            patterns = []
+            for t in sorted_terms:
+                left_b = r"\b" if re.match(r"^\w", t) else r"(?<!\w)"
+                right_b = r"\b" if re.search(r"\w$", t) else r"(?!\w)"
+                patterns.append(f"{left_b}{re.escape(t)}{right_b}")
+            combined_pattern = "(?:" + "|".join(patterns) + ")"
+            matches = len(re.findall(combined_pattern, text_lower_raw))
+            if matches > 0:
+                score = round(1.0 * min(2.0, 1.0 + 0.25 * (matches - 1)), 2)
+                extracted_scores[display] = score
+
+        # Pass 2: Curated Tech Pattern Regex Library
+        for tech_pat in TECH_REGEX_PATTERNS:
+            matches = len(tech_pat.pattern.findall(text))
+            if matches > 0:
+                display = tech_pat.display
+                score = round(tech_pat.weight * min(2.0, 1.0 + 0.25 * (matches - 1)), 2)
+                extracted_scores[display] = max(extracted_scores.get(display, 0.0), score)
+
+
+        # Pass 3: Work-Domain Concepts
+        for pattern, display, cat, weight in WORK_DOMAIN_PATTERNS:
+            matches = len(pattern.findall(text))
+            if matches > 0:
+                score = round(weight * min(2.0, 1.0 + 0.2 * (matches - 1)), 2)
+                extracted_scores[display] = max(extracted_scores.get(display, 0.0), score)
+
+        # Pass 4: spaCy NER Extraction for Unknown Products
+        doc = self.nlp(cleaned_text)
+        spacy_products = []
+        if hasattr(doc, "ents"):
+            for ent in doc.ents:
+                if ent.label_ == "PRODUCT":
+                    spacy_products.append(ent.text.strip())
+
+        for prod in spacy_products:
+            prod_clean = re.sub(r"^[^\w]+", "", prod)
+            prod_clean = re.sub(r"[\r\n]+", " ", prod_clean).strip()
+            prod_lower = prod_clean.lower()
+            if (
+                len(prod_clean) > 2
+                and len(prod_clean.split()) <= 3
+                and prod_lower not in NON_SKILL_STOPWORDS
+                and prod_lower not in org_entities
+            ):
+                display = prod_clean.title()
+                if display not in extracted_scores:
+                    extracted_scores[display] = 0.8
+
+        # 4. Filter & Clean Extracted Skills
+        final_scores: Dict[str, float] = {}
+        for kw, score in extracted_scores.items():
             kw_clean = re.sub(r"^[^\w]+", "", kw)
             kw_clean = re.sub(r"[\r\n]+", " ", kw_clean).strip()
-            
-            # Filter out section headers, conversational phrases, long phrases
             kw_lower = kw_clean.lower()
-            kw_words = set(re.split(r"\W+", kw_lower))
             if (
-                len(kw_clean) > 2 
-                and len(kw_clean.split()) <= 3 
+                len(kw_clean) > 1
                 and kw_lower not in NON_SKILL_STOPWORDS
                 and kw_lower not in org_entities
-                and not (kw_words & org_entities)
                 and not kw_lower.startswith(("key responsibilities", "strong proficiency", "hands-on experience", "bs/ms", "experience with", "experience building", "this role", "qualifications"))
             ):
-                clean_kws.append(kw_clean)
+                final_scores[kw_clean] = score
 
-        # Merge & deduplicate keywords deterministically
-        combined = list(dict.fromkeys(clean_kws))
-        skills = combined
+        # Sort skills by score descending
+        sorted_skills = sorted(final_scores.keys(), key=lambda k: final_scores[k], reverse=True)
 
         return JDProfile(
             role=role,
             seniority=seniority,
-            skills=skills,
-            keywords=combined,
+            skills=sorted_skills,
+            keywords=sorted_skills,
+            keyword_scores=final_scores,
             raw_text=text
         )

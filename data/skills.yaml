@@ -58,6 +58,11 @@ skills:
     display: "GitHub Actions"
     aliases: ["github actions", "github-actions"]
     category: "Tools"
+  - id: kafka
+    display: "Apache Kafka"
+    aliases: ["kafka", "confluent kafka", "apache kafka", "event streaming"]
+    category: "Tools"
+
 
   # Databases
   - id: ms_sql

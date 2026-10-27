@@ -236,10 +236,16 @@ skills:
     display: "TDD"
     aliases: ["tdd", "test driven development", "unit testing", "integration testing"]
     category: "Concepts"
+  - id: kafka
+    display: "Apache Kafka"
+    aliases: ["kafka", "apache kafka", "confluent kafka", "event streaming"]
+    category: "Concepts"
+
   - id: event_driven
     display: "Event-Driven"
-    aliases: ["event-driven", "event driven architecture", "message queues", "kafka", "rabbitmq", "service bus", "event-driven architecture"]
+    aliases: ["event-driven", "event driven architecture", "message queues", "rabbitmq", "service bus", "event-driven architecture"]
     category: "Concepts"
+
   - id: machine_learning
     display: "Machine Learning"
     aliases: ["machine learning", "ml", "artificial intelligence", "ai", "deep learning", "nlp"]

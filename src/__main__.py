@@ -101,16 +101,13 @@ def main():
     if args.manifest or config.output.show_manifest:
         console.print("\n" + result.manifest + "\n")
 
-    # Copy to clipboard if requested or if PDF compilation is not available
-    should_copy_clipboard = args.copy or config.output.copy_to_clipboard or not result.pdf_bytes
+    # Copy to clipboard if explicitly requested via flag or config
+    should_copy_clipboard = args.copy or config.output.copy_to_clipboard
     if should_copy_clipboard:
         try:
             import pyperclip
             pyperclip.copy(result.latex_string)
-            if not result.pdf_bytes:
-                console.print("\n[bold green][+] [PDF Compiler Missing] LaTeX code automatically copied to clipboard for instant pasting![/bold green]")
-            else:
-                console.print("\n[bold green][+] LaTeX code copied to clipboard![/bold green]")
+            console.print("\n[bold green][+] LaTeX code copied to clipboard![/bold green]")
         except Exception:
             pass
 

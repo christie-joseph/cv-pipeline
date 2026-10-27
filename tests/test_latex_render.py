@@ -49,3 +49,28 @@ def test_latex_renderer():
     assert "Cloud" in latex_str
     assert "Technologies" in latex_str
     assert "\\&" in latex_str  # Escaped ampersand
+
+
+def test_latex_escaping_special_chars():
+    template_dir = str(project_root / "templates")
+    renderer = LatexRenderer(template_dir=template_dir)
+
+    raw_text = r"C:\path\to\file & 100% $5 #1 {foo_bar} ~user ^exp"
+    escaped = renderer.escape_latex(raw_text)
+
+    # Crucial check: backslash MUST escape to \textbackslash{} without braces being double-escaped
+    assert r"\textbackslash{}" in escaped
+    assert r"\textbackslash\{\}" not in escaped
+    assert r"\&" in escaped
+    assert r"\%" in escaped
+    assert r"\$" in escaped
+    assert r"\#" in escaped
+    assert r"\{" in escaped
+    assert r"\_" in escaped
+    assert r"\}" in escaped
+    assert r"\textasciitilde{}" in escaped
+    assert r"\textasciicircum{}" in escaped
+
+    # Empty string edge case
+    assert renderer.escape_latex("") == ""
+    assert renderer.escape_latex(None) == ""

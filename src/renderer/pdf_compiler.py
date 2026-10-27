@@ -1,9 +1,9 @@
 import os
+import uuid
 import subprocess
 import tempfile
 import shutil
 import logging
-import atexit
 from typing import Optional
 
 logger = logging.getLogger(__name__)
@@ -69,8 +69,8 @@ def open_pdf_in_viewer(pdf_bytes: bytes):
     if not pdf_bytes:
         return
 
-    # Use a fixed file path in OS temp dir to prevent premature atexit deletion before browser finishes launching
-    temp_pdf_path = os.path.join(tempfile.gettempdir(), "cv_pipeline_tailored_resume.pdf")
+    unique_id = uuid.uuid4().hex[:8]
+    temp_pdf_path = os.path.join(tempfile.gettempdir(), f"cv_pipeline_{unique_id}.pdf")
 
     with open(temp_pdf_path, "wb") as f:
         f.write(pdf_bytes)
@@ -82,3 +82,4 @@ def open_pdf_in_viewer(pdf_bytes: bytes):
             subprocess.run(["open" if shutil.which("open") else "xdg-open", temp_pdf_path])
     except Exception as e:
         logger.warning(f"Could not auto-open PDF viewer: {e}")
+

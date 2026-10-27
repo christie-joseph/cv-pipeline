@@ -76,7 +76,8 @@ class RewriterConfig(BaseModel):
                 ApiProviderConfig(
                     name="gemini",
                     api_url="https://generativelanguage.googleapis.com/v1beta/openai",
-                    api_model="gemini-2.5-flash",
+                    api_model="gemini-3.8-flash",
+
                     api_key_env="GEMINI_API_KEY",
                     timeout_seconds=10,
                     priority=2

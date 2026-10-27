@@ -1,53 +1,102 @@
+import re
+from typing import Optional, Dict
 from ..ranker.skill_matcher import MatchResult
 from ..models.resume import TailoredResume
 from ..models.jd_profile import JDProfile
+from ..ranker.faang_scorer import STRONG_ACTION_VERBS
 
 
-def generate_ats_report(jd_profile: JDProfile, match_result: MatchResult, resume: TailoredResume) -> str:
+def generate_ats_report(
+    jd_profile: JDProfile,
+    match_result: MatchResult,
+    resume: TailoredResume,
+    keyword_scores: Optional[Dict[str, float]] = None
+) -> str:
     match_pct = match_result.match_percentage
     rewriter_tier = resume.metadata.get("rewriter_tier", "Unknown")
     selected_exp_count = len(resume.selected_experiences)
-    total_bullets = sum(len(e.selected_bullets) for e in resume.selected_experiences)
+    all_bullets = [b for e in resume.selected_experiences for b in e.selected_bullets]
+    total_bullets = len(all_bullets)
 
+    # 1. Compute bullet quality signals
+    metric_count = 0
+    strong_verb_count = 0
+    for sel_b in all_bullets:
+        b_text = sel_b.rewritten_text or sel_b.bullet.text
+        # Metrics check
+        if re.search(r"\b\d+(?:\.\d+)?%?\b|\b\d+[KMB]\b|\b\d+\+?\s*(users|requests|events|gb|tb|ms|s)\b", b_text, re.IGNORECASE):
+            metric_count += 1
+        # Action verb check
+        first_word = re.sub(r'[^a-z]', '', b_text.lower().split()[0]) if b_text.split() else ""
+        if first_word in STRONG_ACTION_VERBS:
+            strong_verb_count += 1
+
+    # 2. Compute Keyword Density Score
+    resume_full_text = " ".join([b.rewritten_text or b.bullet.text for b in all_bullets]).lower()
+    for proj in resume.projects:
+        resume_full_text += " " + " ".join(proj.bullets).lower() + " " + " ".join(proj.tech_stack).lower()
+
+    kw_scores = keyword_scores or getattr(jd_profile, "keyword_scores", {}) or {}
+    covered_val = 0.0
+    total_val = 0.0
+
+    top_keywords = jd_profile.keywords[:15] if jd_profile.keywords else []
+    for kw in top_keywords:
+        wt = kw_scores.get(kw, 1.0)
+        total_val += wt
+        pattern = r"\b" + re.escape(kw.lower()) + r"\b" if re.match(r"^\w", kw) else re.escape(kw.lower())
+        if re.search(pattern, resume_full_text):
+            covered_val += wt
+
+    keyword_density = round((covered_val / total_val) * 100, 1) if total_val > 0 else 100.0
+
+    # 3. Format Card Box
     role_str = (jd_profile.role[:28] + "..") if jd_profile.role and len(jd_profile.role) > 30 else (jd_profile.role or "Unspecified")
     seniority_str = jd_profile.seniority or "Standard"
 
+    width = 48
+    border = "+" + "-" * (width - 2) + "+"
+
+    def fmt_row(content: str) -> str:
+        truncated = content[:width - 4]
+        return f"| {truncated:<{width - 4}} |"
+
     lines = [
-        "+----------------------------------------------+",
-        "|              ATS MATCH REPORT                |",
-        "+----------------------------------------------+",
-        f"|  Role Target:    {role_str:<27}".ljust(47) + "|",
-        f"|  Seniority:      {seniority_str:<27}".ljust(47) + "|",
-        f"|  Overall Score:  {match_pct}%".ljust(47) + "|",
-        "+----------------------------------------------+",
-        "|  [+] Matched Skills                          |"
+        border,
+        fmt_row("              ATS MATCH REPORT"),
+        border,
+        fmt_row(f"Role Target:     {role_str}"),
+        fmt_row(f"Seniority:       {seniority_str}"),
+        fmt_row(f"Overall Match:   {match_pct}%"),
+        fmt_row(f"Keyword Density: {keyword_density}%"),
+        border,
+        fmt_row("[+] Matched Skills")
     ]
 
     for item, method in match_result.matched:
-        # Truncate item if too long to prevent box overflow
-        clean_item = (item[:15] + "..") if len(item) > 17 else item
+        clean_item = (item[:16] + "..") if len(item) > 18 else item
         clean_method = (method[:14] + "..") if len(method) > 16 else method
-        lines.append(f"|    * {clean_item:<17} ({clean_method})".ljust(47) + "|")
+        lines.append(fmt_row(f"  * {clean_item:<18} ({clean_method})"))
 
     if not match_result.matched:
-        lines.append("|    (None detected)".ljust(47) + "|")
+        lines.append(fmt_row("  (None detected)"))
 
-    lines.append("+----------------------------------------------+")
-    lines.append("|  [-] Missing Skills                          |")
+    lines.append(border)
+    lines.append(fmt_row("[-] Missing Priority Skills"))
 
-    for item in match_result.missing[:8]:  # Limit top 8
-        clean_item = (item[:35] + "..") if len(item) > 37 else item
-        lines.append(f"|    * {clean_item}".ljust(47) + "|")
+    for item in match_result.missing[:8]:
+        clean_item = (item[:36] + "..") if len(item) > 38 else item
+        lines.append(fmt_row(f"  * {clean_item}"))
 
     if not match_result.missing:
-        lines.append("|    (None missing!)".ljust(47) + "|")
+        lines.append(fmt_row("  (None missing!)"))
 
     lines.extend([
-        "+----------------------------------------------+",
-        f"|  Rewriter:    {rewriter_tier[:30]}".ljust(47) + "|",
-        f"|  Experiences: {selected_exp_count} selected".ljust(47) + "|",
-        f"|  Bullets:     {total_bullets} selected".ljust(47) + "|",
-        "+----------------------------------------------+"
+        border,
+        fmt_row(f"Quality:    {metric_count}/{total_bullets} metrics, {strong_verb_count}/{total_bullets} strong verbs"),
+        fmt_row(f"Rewriter:   {rewriter_tier[:32]}"),
+        fmt_row(f"Selected:   {selected_exp_count} experiences, {total_bullets} bullets"),
+        border
     ])
 
     return "\n".join(lines)

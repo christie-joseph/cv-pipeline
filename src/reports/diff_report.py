@@ -33,7 +33,8 @@ def generate_diff_report(all_experiences: List[Experience], resume: TailoredResu
         lines.append(f"  * {sel_exp.experience.company}:")
         for sel_b in sel_exp.selected_bullets:
             bullet_id = sel_b.bullet.id
-            preview = sel_b.rewritten_text[:50] + "..." if len(sel_b.rewritten_text) > 50 else sel_b.rewritten_text
+            raw_text = sel_b.rewritten_text or (sel_b.bullet.text if sel_b.bullet else "") or ""
+            preview = raw_text[:50] + "..." if len(raw_text) > 50 else raw_text
             lines.append(f"    [+] [{bullet_id}] \"{preview}\" (rel: {sel_b.relevance_score})")
 
     lines.append("")

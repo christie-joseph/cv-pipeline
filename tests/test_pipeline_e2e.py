@@ -19,6 +19,20 @@ def test_pipeline_e2e():
     result = pipeline.run(jd_text=jd_text, company_profile_name="google")
     assert result.latex_string
     assert "\\begin{document}" in result.latex_string
+    assert "\\end{document}" in result.latex_string
+    assert "\\resumeSubHeadingListStart" in result.latex_string
+    assert "\\resumeItem" in result.latex_string
+    assert "\\section{Experience}" in result.latex_string
+
     assert result.ats_report
+    assert "ATS" in result.ats_report.upper() or "MATCH" in result.ats_report.upper()
+
     assert result.diff_report
+    assert "SELECTED EXPERIENCES:" in result.diff_report
+    assert "BULLET CHANGES:" in result.diff_report
+
     assert result.manifest
+    assert "REPRODUCIBILITY MANIFEST" in result.manifest
+    assert "JD SHA-256 Hash:" in result.manifest
+    assert "Rewriter Tier Used:" in result.manifest
+    assert "Selected Skills:" in result.manifest

@@ -51,8 +51,9 @@ class OllamaRewriter(BaseRewriter):
             self._available = False
             return False
 
-    def rewrite(self, bullet_text: str, jd_keywords: List[str], prompt_template: str) -> str:
+    def rewrite(self, bullet_text: str, jd_keywords: List[str], prompt_template: str, **kwargs) -> str:
         if not self._checked:
+
             self.is_available()
 
         if not self._available or not self.active_model:

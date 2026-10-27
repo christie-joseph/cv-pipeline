@@ -20,7 +20,8 @@ def test_rewriter_chain_fallback_no_keys(monkeypatch):
     assert rewritten
     assert tier in ["Option C (Rule Engine)", "Option B (Local Ollama GPU)"]
     if tier == "Option C (Rule Engine)":
-        assert "engineered" in rewritten
+        assert "engineered" in rewritten.lower()
+
 
 
 def test_rewriter_chain_fallback_whitespace_keys(monkeypatch):

@@ -87,9 +87,12 @@ class Pipeline:
 
         # Execute Batch AI Rewriting (1 API call for all bullets)
         raw_bullet_texts = [sel_b.bullet.text for sel_b in all_selected_bullet_objects]
+        raw_bullet_tags = [sel_b.bullet.tags for sel_b in all_selected_bullet_objects]
         rewritten_texts, rewriter_tiers = self.rewriter_chain.rewrite_batch(
             bullets=raw_bullet_texts,
-            jd_keywords=jd_profile.keywords
+            jd_keywords=jd_profile.keywords,
+            bullets_tags=raw_bullet_tags,
+            keyword_scores=getattr(jd_profile, "keyword_scores", {})
         )
 
         # Map rewritten results back to bullet objects
@@ -138,7 +141,7 @@ class Pipeline:
 
         selected_skills = [item for item, _ in match_result.matched]
         if not selected_skills:
-            selected_skills = list(dict.fromkeys([t.title() for t in all_resume_tags[:8]]))
+            selected_skills = list(dict.fromkeys([t.title() for t in all_resume_tags]))[:8]
 
         # Target Role from JD or default
         target_role = jd_profile.role or "Software Engineer"
@@ -157,7 +160,13 @@ class Pipeline:
         latex_str = self.renderer.render(tailored_resume)
 
         # 8. Generate Reports
-        ats_report = generate_ats_report(jd_profile, match_result, tailored_resume)
+        ats_report = generate_ats_report(
+            jd_profile,
+            match_result,
+            tailored_resume,
+            keyword_scores=getattr(jd_profile, "keyword_scores", {})
+        )
+
         diff_report = generate_diff_report(all_experiences, tailored_resume)
         manifest = generate_manifest(jd_text, tailored_resume, self.config)
 

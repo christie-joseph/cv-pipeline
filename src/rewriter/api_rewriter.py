@@ -103,27 +103,37 @@ class ApiRewriter(BaseRewriter):
                 if response and response.choices and len(response.choices) > 0:
                     choice = response.choices[0]
                     if choice.message and choice.message.content:
-                        content = choice.message.content.strip()
-                        # Extract JSON array using regex if surrounded by markdown codeblock or text
-                        json_match = re.search(r"\[\s*\".*\"\s*\]", content, re.DOTALL)
-                        if json_match:
-                            content = json_match.group(0)
-                        
+                        parsed_list = None
                         try:
                             parsed_list = json.loads(content)
-                            if isinstance(parsed_list, list) and len(parsed_list) == len(bullets):
-                                rprint(f"[green][+] Cloud API Provider {cfg.name} succeeded![/green]")
-                                return [str(item).strip() for item in parsed_list], cfg.name
-                            elif isinstance(parsed_list, list) and len(parsed_list) > 0:
-                                # Fallback padding/truncation if LLM returned slightly different list length
-                                result = [str(item).strip() for item in parsed_list[:len(bullets)]]
-                                while len(result) < len(bullets):
-                                    result.append(bullets[len(result)])
-                                rprint(f"[green][+] Cloud API Provider {cfg.name} succeeded (with length adjustment)![/green]")
-                                return result, cfg.name
-                        except json.JSONDecodeError as je:
-                            rprint(f"[yellow][!] Cloud API Provider {cfg.name} returned invalid JSON. Trying next...[/yellow]")
-                            logger.warning(f"Failed to parse JSON batch from '{cfg.name}': {je}. Content: {content[:100]}...")
+                        except json.JSONDecodeError:
+                            # Strip markdown fences if present
+                            content_stripped = re.sub(r"^```(?:json)?\s*", "", content, flags=re.MULTILINE)
+                            content_stripped = re.sub(r"```\s*$", "", content_stripped, flags=re.MULTILINE).strip()
+                            try:
+                                parsed_list = json.loads(content_stripped)
+                            except json.JSONDecodeError:
+                                # Non-greedy bracket extraction
+                                json_match = re.search(r"\[.*?\]", content_stripped, re.DOTALL)
+                                if json_match:
+                                    try:
+                                        parsed_list = json.loads(json_match.group(0))
+                                    except json.JSONDecodeError:
+                                        pass
+
+                        if isinstance(parsed_list, list) and len(parsed_list) == len(bullets):
+                            rprint(f"[green][+] Cloud API Provider {cfg.name} succeeded![/green]")
+                            return [str(item).strip() for item in parsed_list], cfg.name
+                        elif isinstance(parsed_list, list) and len(parsed_list) > 0:
+                            result = [str(item).strip() for item in parsed_list[:len(bullets)]]
+                            while len(result) < len(bullets):
+                                result.append(bullets[len(result)])
+                            rprint(f"[green][+] Cloud API Provider {cfg.name} succeeded (with length adjustment)![/green]")
+                            return result, cfg.name
+                        else:
+                            rprint(f"[yellow][!] Cloud API Provider {cfg.name} returned invalid structure. Trying next...[/yellow]")
+                            logger.warning(f"Failed to parse valid list from '{cfg.name}'. Content: {content[:100]}...")
+
 
             except Exception as e:
                 from rich import print as rprint

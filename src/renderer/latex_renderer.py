@@ -5,6 +5,20 @@ from typing import Optional, List, Dict
 from ..models.resume import TailoredResume
 from ..models.experience import SkillTaxonomy
 
+_LATEX_SPECIAL_MAP = {
+    "\\": r"\textbackslash{}",
+    "&": r"\&",
+    "%": r"\%",
+    "$": r"\$",
+    "#": r"\#",
+    "_": r"\_",
+    "{": r"\{",
+    "}": r"\}",
+    "~": r"\textasciitilde{}",
+    "^": r"\textasciicircum{}",
+}
+_LATEX_PATTERN = re.compile("|".join(re.escape(k) for k in _LATEX_SPECIAL_MAP.keys()))
+
 
 class LatexRenderer:
     def __init__(self, template_dir: Optional[str] = None):
@@ -20,33 +34,14 @@ class LatexRenderer:
             lstrip_blocks=True
         )
         self.taxonomy = SkillTaxonomy.load_from_yaml(str(project_root / "data" / "skills.yaml"))
+        g_path = project_root / "data" / "global_skills.yaml"
+        self.global_taxonomy = SkillTaxonomy.load_from_yaml(str(g_path)) if g_path.exists() else None
 
     def escape_latex(self, text: str) -> str:
-        """Escapes LaTeX special characters in strict deterministic order."""
+        """Escapes LaTeX special characters in a single pass to prevent double-escaping."""
         if not text:
             return ""
-        
-        # 1. First escape backslashes to prevent double-escaping downstream
-        result = text.replace("\\", r"\textbackslash{}")
-        
-        # 2. Escape special characters
-        replacements = [
-            ("&", r"\&"),
-            ("%", r"\%"),
-            ("$", r"\$"),
-            ("#", r"\#"),
-            ("_", r"\_"),
-            ("{", r"\{"),
-            ("}", r"\}"),
-            ("~", r"\textasciitilde{}"),
-            ("^", r"\textasciicircum{}"),
-        ]
-        
-        for char, sub in replacements:
-            pattern = r"(?<!\\)" + re.escape(char)
-            result = re.sub(pattern, sub, result)
-            
-        return result
+        return _LATEX_PATTERN.sub(lambda m: _LATEX_SPECIAL_MAP[m.group(0)], text)
 
     def _extract_grad_year(self, dates_str: str) -> str:
         """Extracts graduation year from dates string (e.g. 'Sept 2021 -- Sept 2022' -> '2022')."""
@@ -60,21 +55,21 @@ class LatexRenderer:
     def render(self, resume: TailoredResume, template_name: str = "resume.tex.j2") -> str:
         template = self.env.get_template(template_name)
         
-        # 1. Contact Info & Line Assembly (Name and Email required, others optional)
+        # 1. Contact Info & Line Assembly (URLs should NOT be escaped in href target)
         contact_parts = []
         if resume.contact_info.email:
             esc_email = self.escape_latex(resume.contact_info.email)
-            contact_parts.append(f"\\href{{mailto:{esc_email}}}{{\\underline{{{esc_email}}}}}")
+            contact_parts.append(f"\\href{{mailto:{resume.contact_info.email}}}{{\\underline{{{esc_email}}}}}")
         if resume.contact_info.phone:
             contact_parts.append(self.escape_latex(resume.contact_info.phone))
         if resume.contact_info.linkedin:
             li_clean = re.sub(r"^https?://", "", resume.contact_info.linkedin)
             esc_li = self.escape_latex(li_clean)
-            contact_parts.append(f"\\href{{https://{esc_li}}}{{\\underline{{{esc_li}}}}}")
+            contact_parts.append(f"\\href{{https://{li_clean}}}{{\\underline{{{esc_li}}}}}")
         if resume.contact_info.github:
             gh_clean = re.sub(r"^https?://", "", resume.contact_info.github)
             esc_gh = self.escape_latex(gh_clean)
-            contact_parts.append(f"\\href{{https://{esc_gh}}}{{\\underline{{{esc_gh}}}}}")
+            contact_parts.append(f"\\href{{https://{gh_clean}}}{{\\underline{{{esc_gh}}}}}")
             
         contact_data = {
             "name": self.escape_latex(resume.contact_info.name),
@@ -132,24 +127,90 @@ class LatexRenderer:
                 "bullets": [self.escape_latex(b) for b in proj.bullets]
             })
 
-        # 5. Categorize Skills dynamically from self.taxonomy.skills (Max 5 categories)
-        category_order = []
-        category_skills = {}
-        for s in self.taxonomy.skills:
+        # 5. Categorize Skills dynamically from taxonomy & selected_skills
+        # Map skill display to its canonical category
+        skill_to_cat = {}
+        all_skills = []
+        if self.taxonomy:
+            all_skills.extend(self.taxonomy.skills)
+        if self.global_taxonomy:
+            all_skills.extend(self.global_taxonomy.skills)
+
+        for s in all_skills:
             cat = s.category or "Technologies"
-            if cat not in category_skills:
-                if len(category_order) >= 5:
-                    continue  # Ignore any 6th category and beyond
-                category_order.append(cat)
-                category_skills[cat] = []
-            category_skills[cat].append(self.escape_latex(s.display))
+            # Normalize naming: 'Tools' -> 'Technologies', 'Cloud Services' -> 'Cloud'
+            if cat.lower() in ["tools", "frameworks & libraries", "frameworks"]:
+                cat = "Frameworks"
+            elif cat.lower() in ["cloud", "cloud services"]:
+                cat = "Cloud"
+            elif cat.lower() in ["databases"]:
+                cat = "Databases"
+            elif cat.lower() in ["languages"]:
+                cat = "Languages"
+            skill_to_cat[s.display.lower()] = (s.display, cat)
+            for a in s.aliases:
+                skill_to_cat[a.lower()] = (s.display, cat)
+
+        # Standard canonical category order
+        desired_categories = ["Languages", "Frameworks", "Databases", "Cloud", "Technologies"]
+        category_skills = {c: [] for c in desired_categories}
+
+        # First, populate from resume.selected_skills
+        selected_set = set()
+        for sk in resume.selected_skills:
+            sk_clean = sk.strip()
+            lookup = skill_to_cat.get(sk_clean.lower())
+            if lookup:
+                disp, cat = lookup
+                if cat not in category_skills:
+                    cat = "Technologies"
+                if disp not in category_skills[cat]:
+                    category_skills[cat].append(disp)
+                    selected_set.add(disp.lower())
+            else:
+                category_skills["Technologies"].append(sk_clean)
+                selected_set.add(sk_clean.lower())
+
+        # If a category is empty, pull relevant defaults from self.taxonomy or global_taxonomy
+        for s in all_skills:
+            cat = s.category or "Technologies"
+            if cat.lower() in ["tools", "frameworks", "frameworks & libraries"]:
+                cat = "Frameworks"
+            elif cat.lower() in ["cloud", "cloud services"]:
+                cat = "Cloud"
+            elif cat.lower() in ["databases"]:
+                cat = "Databases"
+            elif cat.lower() in ["languages"]:
+                cat = "Languages"
+            else:
+                cat = "Technologies"
+
+            if cat in category_skills and len(category_skills[cat]) < 2:
+                if s.display.lower() not in selected_set:
+                    category_skills[cat].append(s.display)
+                    selected_set.add(s.display.lower())
+
+        # Fallback guarantee for any still-empty desired category
+        fallbacks = {
+            "Languages": ["Python", "Java"],
+            "Frameworks": ["React", "FastAPI"],
+            "Databases": ["PostgreSQL", "Redis"],
+            "Cloud": ["AWS", "Docker"],
+            "Technologies": ["Git", "CI/CD"]
+        }
+        for cat in desired_categories:
+            if not category_skills[cat]:
+                category_skills[cat] = fallbacks.get(cat, ["General"])
 
         skill_categories_data = []
-        for cat in category_order:
-            skill_categories_data.append({
-                "name": self.escape_latex(cat),
-                "skills_str": ", ".join(category_skills[cat])
-            })
+        for cat in desired_categories:
+            if category_skills[cat]:
+                esc_skills = [self.escape_latex(x) for x in category_skills[cat]]
+                skill_categories_data.append({
+                    "name": self.escape_latex(cat),
+                    "skills_str": ", ".join(esc_skills)
+                })
+
 
         rendered = template.render(
             contact_info=contact_data,

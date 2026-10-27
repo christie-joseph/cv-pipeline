@@ -1,6 +1,7 @@
 import os
 import re
 import yaml
+import logging
 import numpy as np
 from pathlib import Path
 from typing import List, Dict, Any, Optional
@@ -9,6 +10,9 @@ from sklearn.metrics.pairwise import cosine_similarity
 from ..models.experience import Experience
 from ..models.jd_profile import JDProfile
 from ..models.config import PipelineConfig
+
+logger = logging.getLogger(__name__)
+
 
 
 class ScoredExperience:
@@ -140,7 +144,8 @@ class ExperienceRanker:
             matrix = vec.fit_transform(docs)
             sims = cosine_similarity(matrix[1:], matrix[0]).flatten()
             return [float(s) for s in sims]
-        except Exception:
+        except Exception as e:
+            logger.warning(f"TF-IDF scoring failed: {e}")
             return [0.0] * len(exp_texts)
 
     def _compute_embedding_scores(self, exp_texts: List[str], jd_text: str) -> List[float]:
@@ -154,7 +159,8 @@ class ExperienceRanker:
                 for e_emb in exp_embs
             ]
             return sims
-        except Exception:
+        except Exception as e:
+            logger.warning(f"Embedding scoring failed: {e}")
             return [0.0] * len(exp_texts)
 
     def _select_best_title(self, exp: Experience, jd_profile: JDProfile) -> str:
