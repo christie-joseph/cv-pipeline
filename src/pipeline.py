@@ -132,11 +132,13 @@ class Pipeline:
             all_resume_tags.append(sk.display)
             all_resume_tags.extend(sk.aliases)
 
-        # 5. Match Skills using tags AND full resume text
+        # 5. Match Skills using tags, full text, and section weighting
         match_result = self.skill_matcher.match(
             jd_skills=jd_profile.skills,
             resume_tags=all_resume_tags,
-            resume_text=full_resume_text
+            resume_text=full_resume_text,
+            required_skills=getattr(jd_profile, "required_skills", None),
+            preferred_skills=getattr(jd_profile, "preferred_skills", None)
         )
 
         selected_skills = [item for item, _ in match_result.matched]

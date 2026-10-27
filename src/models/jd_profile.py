@@ -8,5 +8,6 @@ class JDProfile(BaseModel):
     skills: List[str] = Field(default_factory=list)
     keywords: List[str] = Field(default_factory=list)
     keyword_scores: Dict[str, float] = Field(default_factory=dict)
+    required_skills: List[str] = Field(default_factory=list)
+    preferred_skills: List[str] = Field(default_factory=list)
     raw_text: str = ""
-

@@ -1,268 +1,630 @@
 skills:
-  # Languages
-  - id: javascript
-    display: "JavaScript"
-    aliases: ["javascript", "js", "ecmascript", "es6"]
-    category: "Languages"
-  - id: typescript
-    display: "TypeScript"
-    aliases: ["typescript", "ts"]
-    category: "Languages"
-  - id: python
-    display: "Python"
-    aliases: ["python", "python3"]
-    category: "Languages"
-  - id: java
-    display: "Java"
-    aliases: ["java", "jvm", "j2ee"]
-    category: "Languages"
-  - id: csharp
-    display: "C#"
-    aliases: ["c#", "csharp", ".net", "dotnet", "c#/.net", "modern c#/.net"]
-    category: "Languages"
-  - id: cpp
-    display: "C++"
-    aliases: ["c++", "cpp", "cxx"]
-    category: "Languages"
-  - id: c
-    display: "C"
-    aliases: ["c"]
-    category: "Languages"
-  - id: go
-    display: "Go"
-    aliases: ["go", "golang"]
-    category: "Languages"
-  - id: rust
-    display: "Rust"
-    aliases: ["rust", "rustlang"]
-    category: "Languages"
-  - id: ruby
-    display: "Ruby"
-    aliases: ["ruby", "ruby on rails", "rails"]
-    category: "Languages"
-  - id: php
-    display: "PHP"
-    aliases: ["php"]
-    category: "Languages"
-  - id: swift
-    display: "Swift"
-    aliases: ["swift"]
-    category: "Languages"
-  - id: kotlin
-    display: "Kotlin"
-    aliases: ["kotlin"]
-    category: "Languages"
-  - id: sql
-    display: "SQL"
-    aliases: ["sql", "mysql", "postgresql", "postgres", "t-sql", "tsql", "pl/sql", "database queries"]
-    category: "Languages"
-  - id: html
-    display: "HTML"
-    aliases: ["html", "html5"]
-    category: "Languages"
-  - id: css
-    display: "CSS"
-    aliases: ["css", "css3", "sass", "scss", "less"]
-    category: "Languages"
-  - id: bash
-    display: "Bash"
-    aliases: ["bash", "shell", "scripting", "powershell", "sh", "unix shell"]
-    category: "Languages"
-  - id: dart
-    display: "Dart"
-    aliases: ["dart"]
-    category: "Languages"
-
-  # Frameworks & Libraries
-  - id: react
-    display: "React"
-    aliases: ["react", "react.js", "reactjs", "react native"]
-    category: "Frameworks"
-  - id: angular
-    display: "Angular"
-    aliases: ["angular", "angularjs", "angular.js"]
-    category: "Frameworks"
-  - id: vue
-    display: "Vue.js"
-    aliases: ["vue", "vue.js", "vuejs"]
-    category: "Frameworks"
-  - id: nodejs
-    display: "Node.js"
-    aliases: ["node.js", "node", "nodejs"]
-    category: "Frameworks"
-  - id: django
-    display: "Django"
-    aliases: ["django"]
-    category: "Frameworks"
-  - id: flask
-    display: "Flask"
-    aliases: ["flask"]
-    category: "Frameworks"
-  - id: fastapi
-    display: "FastAPI"
-    aliases: ["fastapi"]
-    category: "Frameworks"
-  - id: springboot
-    display: "Spring Boot"
-    aliases: ["spring", "spring boot", "springboot", "spring framework"]
-    category: "Frameworks"
-  - id: aspnet
-    display: "ASP.NET Core"
-    aliases: ["asp.net", "asp.net core", "aspnet", "aspnetcore", "blazor", "entity framework"]
-    category: "Frameworks"
-  - id: express
-    display: "Express"
-    aliases: ["express", "express.js", "expressjs"]
-    category: "Frameworks"
-  - id: nestjs
-    display: "NestJS"
-    aliases: ["nestjs"]
-    category: "Frameworks"
-  - id: nextjs
-    display: "Next.js"
-    aliases: ["nextjs", "next.js"]
-    category: "Frameworks"
-  - id: svelte
-    display: "Svelte"
-    aliases: ["svelte", "sveltekit"]
-    category: "Frameworks"
-  - id: flutter
-    display: "Flutter"
-    aliases: ["flutter"]
-    category: "Frameworks"
-
-  # Databases
-  - id: mongodb
-    display: "MongoDB"
-    aliases: ["mongodb", "mongo", "mongoose", "nosql"]
-    category: "Databases"
-  - id: redis
-    display: "Redis"
-    aliases: ["redis", "memcached"]
-    category: "Databases"
-  - id: cassandra
-    display: "Cassandra"
-    aliases: ["cassandra"]
-    category: "Databases"
-  - id: elasticsearch
-    display: "Elasticsearch"
-    aliases: ["elasticsearch", "elastic search", "elk", "kibana", "logstash"]
-    category: "Databases"
-  - id: firebase
-    display: "Firebase"
-    aliases: ["firebase", "firestore"]
-    category: "Databases"
-  - id: dynamodb
-    display: "DynamoDB"
-    aliases: ["dynamodb"]
-    category: "Databases"
-  - id: cosmosdb
-    display: "Cosmos DB"
-    aliases: ["cosmosdb", "cosmos db"]
-    category: "Databases"
-  - id: bigquery
-    display: "BigQuery"
-    aliases: ["bigquery"]
-    category: "Databases"
-
-  # Cloud & DevOps
-  - id: aws
-    display: "AWS"
-    aliases: ["aws", "amazon web services", "ec2", "s3", "lambda", "cloudfront"]
-    category: "Cloud"
-  - id: azure
-    display: "Azure"
-    aliases: ["azure", "microsoft azure", "azure devops"]
-    category: "Cloud"
-  - id: gcp
-    display: "GCP"
-    aliases: ["gcp", "google cloud platform", "google cloud"]
-    category: "Cloud"
-  - id: docker
-    display: "Docker"
-    aliases: ["docker", "containerization", "containers"]
-    category: "Cloud"
-  - id: kubernetes
-    display: "Kubernetes"
-    aliases: ["kubernetes", "k8s", "eks", "aks", "gke"]
-    category: "Cloud"
-  - id: terraform
-    display: "Terraform"
-    aliases: ["terraform", "iac", "infrastructure as code"]
-    category: "Cloud"
-  - id: ansible
-    display: "Ansible"
-    aliases: ["ansible"]
-    category: "Cloud"
-  - id: jenkins
-    display: "Jenkins"
-    aliases: ["jenkins"]
-    category: "Cloud"
-  - id: cicd
-    display: "CI/CD"
-    aliases: ["ci/cd", "ci", "cd", "continuous integration", "continuous deployment", "github actions", "gitlab ci", "pipelines", "source control"]
-    category: "Cloud"
-  - id: git
-    display: "Git"
-    aliases: ["git", "github", "gitlab", "bitbucket", "version control", "source control"]
-    category: "Tools"
-
-  # Architecture & Concepts
-  - id: microservices
-    display: "Microservices"
-    aliases: ["microservices", "microservice architecture"]
-    category: "Concepts"
-  - id: distributed_systems
-    display: "Distributed Systems"
-    aliases: ["distributed systems", "distributed architecture", "systems spanning"]
-    category: "Concepts"
-  - id: rest
-    display: "REST API"
-    aliases: ["rest", "restful", "rest api", "restful apis"]
-    category: "Concepts"
-  - id: graphql
-    display: "GraphQL"
-    aliases: ["graphql"]
-    category: "Concepts"
-  - id: grpc
-    display: "gRPC"
-    aliases: ["grpc", "protobuf"]
-    category: "Concepts"
-  - id: agile
-    display: "Agile"
-    aliases: ["agile", "scrum", "kanban"]
-    category: "Concepts"
-  - id: tdd
-    display: "TDD"
-    aliases: ["tdd", "test driven development", "unit testing", "integration testing"]
-    category: "Concepts"
-  - id: kafka
-    display: "Apache Kafka"
-    aliases: ["kafka", "apache kafka", "confluent kafka", "event streaming"]
-    category: "Concepts"
-
-  - id: event_driven
-    display: "Event-Driven"
-    aliases: ["event-driven", "event driven architecture", "message queues", "rabbitmq", "service bus", "event-driven architecture"]
-    category: "Concepts"
-
-  - id: machine_learning
-    display: "Machine Learning"
-    aliases: ["machine learning", "ml", "artificial intelligence", "ai", "deep learning", "nlp"]
-    category: "Concepts"
-  - id: observability
-    display: "Observability"
-    aliases: ["observability", "telemetry", "monitoring", "logging", "datadog", "prometheus", "grafana"]
-    category: "Concepts"
-  - id: security
-    display: "Security"
-    aliases: ["security", "identity", "authentication", "authorization", "iam", "oauth", "jwt"]
-    category: "Concepts"
-  - id: debugging
-    display: "Debugging"
-    aliases: ["debugging", "troubleshooting", "profiling"]
-    category: "Concepts"
-  - id: timeouts
-    display: "Timeouts & Retries"
-    aliases: ["timeouts", "retries", "partial failures"]
-    category: "Concepts"
+- id: javascript
+  display: JavaScript
+  aliases:
+  - javascript
+  - js
+  - ecmascript
+  - es6
+  category: Languages
+- id: typescript
+  display: TypeScript
+  aliases:
+  - typescript
+  - ts
+  category: Languages
+- id: python
+  display: Python
+  aliases:
+  - python
+  - python3
+  category: Languages
+- id: java
+  display: Java
+  aliases:
+  - java
+  - jvm
+  - j2ee
+  category: Languages
+- id: csharp
+  display: C#
+  aliases:
+  - c#
+  - csharp
+  - .net
+  - dotnet
+  - c#/.net
+  - modern c#/.net
+  category: Languages
+- id: cpp
+  display: C++
+  aliases:
+  - c++
+  - cpp
+  - cxx
+  category: Languages
+- id: c
+  display: C
+  aliases:
+  - c
+  category: Languages
+- id: go
+  display: Go
+  aliases:
+  - go
+  - golang
+  category: Languages
+- id: rust
+  display: Rust
+  aliases:
+  - rust
+  - rustlang
+  category: Languages
+- id: ruby
+  display: Ruby
+  aliases:
+  - ruby
+  - ruby on rails
+  - rails
+  category: Languages
+- id: php
+  display: PHP
+  aliases:
+  - php
+  category: Languages
+- id: swift
+  display: Swift
+  aliases:
+  - swift
+  category: Languages
+- id: kotlin
+  display: Kotlin
+  aliases:
+  - kotlin
+  category: Languages
+- id: sql
+  display: SQL
+  aliases:
+  - sql
+  - mysql
+  - postgresql
+  - postgres
+  - t-sql
+  - tsql
+  - pl/sql
+  - database queries
+  category: Languages
+- id: html
+  display: HTML
+  aliases:
+  - html
+  - html5
+  category: Languages
+- id: css
+  display: CSS
+  aliases:
+  - css
+  - css3
+  - sass
+  - scss
+  - less
+  category: Languages
+- id: bash
+  display: Bash
+  aliases:
+  - bash
+  - shell
+  - scripting
+  - powershell
+  - sh
+  - unix shell
+  category: Languages
+- id: dart
+  display: Dart
+  aliases:
+  - dart
+  category: Languages
+- id: react
+  display: React
+  aliases:
+  - react
+  - react.js
+  - reactjs
+  - react native
+  category: Frameworks
+- id: angular
+  display: Angular
+  aliases:
+  - angular
+  - angularjs
+  - angular.js
+  category: Frameworks
+- id: vue
+  display: Vue.js
+  aliases:
+  - vue
+  - vue.js
+  - vuejs
+  category: Frameworks
+- id: nodejs
+  display: Node.js
+  aliases:
+  - node.js
+  - node
+  - nodejs
+  category: Frameworks
+- id: django
+  display: Django
+  aliases:
+  - django
+  category: Frameworks
+- id: flask
+  display: Flask
+  aliases:
+  - flask
+  category: Frameworks
+- id: fastapi
+  display: FastAPI
+  aliases:
+  - fastapi
+  category: Frameworks
+- id: springboot
+  display: Spring Boot
+  aliases:
+  - spring
+  - spring boot
+  - springboot
+  - spring framework
+  category: Frameworks
+- id: aspnet
+  display: ASP.NET Core
+  aliases:
+  - asp.net
+  - asp.net core
+  - aspnet
+  - aspnetcore
+  - blazor
+  - entity framework
+  category: Frameworks
+- id: express
+  display: Express
+  aliases:
+  - express
+  - express.js
+  - expressjs
+  category: Frameworks
+- id: nestjs
+  display: NestJS
+  aliases:
+  - nestjs
+  category: Frameworks
+- id: nextjs
+  display: Next.js
+  aliases:
+  - nextjs
+  - next.js
+  category: Frameworks
+- id: svelte
+  display: Svelte
+  aliases:
+  - svelte
+  - sveltekit
+  category: Frameworks
+- id: flutter
+  display: Flutter
+  aliases:
+  - flutter
+  category: Frameworks
+- id: mongodb
+  display: MongoDB
+  aliases:
+  - mongodb
+  - mongo
+  - mongoose
+  - nosql
+  category: Databases
+- id: redis
+  display: Redis
+  aliases:
+  - redis
+  - memcached
+  category: Databases
+- id: cassandra
+  display: Cassandra
+  aliases:
+  - cassandra
+  category: Databases
+- id: elasticsearch
+  display: Elasticsearch
+  aliases:
+  - elasticsearch
+  - elastic search
+  - elk
+  - kibana
+  - logstash
+  category: Databases
+- id: firebase
+  display: Firebase
+  aliases:
+  - firebase
+  - firestore
+  category: Databases
+- id: dynamodb
+  display: DynamoDB
+  aliases:
+  - dynamodb
+  category: Databases
+- id: cosmosdb
+  display: Cosmos DB
+  aliases:
+  - cosmosdb
+  - cosmos db
+  category: Databases
+- id: bigquery
+  display: BigQuery
+  aliases:
+  - bigquery
+  category: Databases
+- id: aws
+  display: AWS
+  aliases:
+  - aws
+  - amazon web services
+  - ec2
+  - s3
+  - lambda
+  - cloudfront
+  category: Cloud
+- id: azure
+  display: Azure
+  aliases:
+  - azure
+  - microsoft azure
+  - azure devops
+  category: Cloud
+- id: gcp
+  display: GCP
+  aliases:
+  - gcp
+  - google cloud platform
+  - google cloud
+  category: Cloud
+- id: docker
+  display: Docker
+  aliases:
+  - docker
+  - containerization
+  - containers
+  category: Cloud
+- id: kubernetes
+  display: Kubernetes
+  aliases:
+  - kubernetes
+  - k8s
+  - eks
+  - aks
+  - gke
+  category: Cloud
+- id: terraform
+  display: Terraform
+  aliases:
+  - terraform
+  - iac
+  - infrastructure as code
+  category: Cloud
+- id: ansible
+  display: Ansible
+  aliases:
+  - ansible
+  category: Cloud
+- id: jenkins
+  display: Jenkins
+  aliases:
+  - jenkins
+  category: Cloud
+- id: cicd
+  display: CI/CD
+  aliases:
+  - ci/cd
+  - ci
+  - cd
+  - continuous integration
+  - continuous deployment
+  - github actions
+  - gitlab ci
+  - pipelines
+  - source control
+  category: Cloud
+- id: git
+  display: Git
+  aliases:
+  - git
+  - github
+  - gitlab
+  - bitbucket
+  - version control
+  - source control
+  category: Tools
+- id: microservices
+  display: Microservices
+  aliases:
+  - microservices
+  - microservice architecture
+  category: Concepts
+- id: distributed_systems
+  display: Distributed Systems
+  aliases:
+  - distributed systems
+  - distributed architecture
+  - systems spanning
+  category: Concepts
+- id: rest
+  display: REST API
+  aliases:
+  - rest
+  - restful
+  - rest api
+  - restful apis
+  category: Concepts
+- id: graphql
+  display: GraphQL
+  aliases:
+  - graphql
+  category: Concepts
+- id: grpc
+  display: gRPC
+  aliases:
+  - grpc
+  - protobuf
+  category: Concepts
+- id: agile
+  display: Agile
+  aliases:
+  - agile
+  - scrum
+  - kanban
+  category: Concepts
+- id: tdd
+  display: TDD
+  aliases:
+  - tdd
+  - test driven development
+  - unit testing
+  - integration testing
+  category: Concepts
+- id: kafka
+  display: Apache Kafka
+  aliases:
+  - kafka
+  - apache kafka
+  - confluent kafka
+  - event streaming
+  category: Concepts
+- id: event_driven
+  display: Event-Driven
+  aliases:
+  - event-driven
+  - event driven architecture
+  - message queues
+  - rabbitmq
+  - service bus
+  - event-driven architecture
+  category: Concepts
+- id: machine_learning
+  display: Machine Learning
+  aliases:
+  - machine learning
+  - ml
+  - artificial intelligence
+  - ai
+  - deep learning
+  - nlp
+  category: Concepts
+- id: observability
+  display: Observability
+  aliases:
+  - observability
+  - telemetry
+  - monitoring
+  - logging
+  - datadog
+  - prometheus
+  - grafana
+  category: Concepts
+- id: security
+  display: Security
+  aliases:
+  - security
+  - identity
+  - authentication
+  - authorization
+  - iam
+  - oauth
+  - jwt
+  category: Concepts
+- id: debugging
+  display: Debugging
+  aliases:
+  - debugging
+  - troubleshooting
+  - profiling
+  category: Concepts
+- id: timeouts
+  display: Timeouts & Retries
+  aliases:
+  - timeouts
+  - retries
+  - partial failures
+  category: Concepts
+- id: postgresql
+  display: PostgreSQL
+  aliases:
+  - postgresql
+  - postgres
+  - psql
+  category: Databases
+- id: mysql
+  display: MySQL
+  aliases:
+  - mysql
+  category: Databases
+- id: snowflake
+  display: Snowflake
+  aliases:
+  - snowflake
+  - snowflake data warehouse
+  category: Databases
+- id: clickhouse
+  display: ClickHouse
+  aliases:
+  - clickhouse
+  category: Databases
+- id: cockroachdb
+  display: CockroachDB
+  aliases:
+  - cockroachdb
+  - cockroach db
+  category: Databases
+- id: vector_db
+  display: Vector Database
+  aliases:
+  - vector database
+  - vector databases
+  - pinecone
+  - qdrant
+  - milvus
+  - chromadb
+  - weaviate
+  category: Databases
+- id: helm
+  display: Helm
+  aliases:
+  - helm
+  - helm charts
+  category: Cloud
+- id: argocd
+  display: ArgoCD
+  aliases:
+  - argocd
+  - argo cd
+  - gitops
+  category: Cloud
+- id: opentelemetry
+  display: OpenTelemetry
+  aliases:
+  - opentelemetry
+  - otel
+  category: Cloud
+- id: istio
+  display: Istio
+  aliases:
+  - istio
+  - service mesh
+  category: Cloud
+- id: prometheus_grafana
+  display: Prometheus & Grafana
+  aliases:
+  - prometheus
+  - grafana
+  category: Cloud
+- id: rabbitmq
+  display: RabbitMQ
+  aliases:
+  - rabbitmq
+  - amqp
+  category: Concepts
+- id: apache_spark
+  display: Apache Spark
+  aliases:
+  - spark
+  - apache spark
+  - pyspark
+  category: Concepts
+- id: apache_flink
+  display: Apache Flink
+  aliases:
+  - flink
+  - apache flink
+  category: Concepts
+- id: high_availability
+  display: High Availability
+  aliases:
+  - high availability
+  - fault tolerance
+  - disaster recovery
+  - ha/dr
+  category: Concepts
+- id: load_balancing
+  display: Load Balancing
+  aliases:
+  - load balancing
+  - load balancer
+  - reverse proxy
+  - nginx
+  - envoy
+  category: Concepts
+- id: concurrency
+  display: Concurrency & Multithreading
+  aliases:
+  - concurrency
+  - multithreading
+  - async/await
+  - asynchronous programming
+  - parallelism
+  category: Concepts
+- id: caching_strategies
+  display: Caching Strategies
+  aliases:
+  - caching
+  - distributed cache
+  - cdn
+  - redis caching
+  - write-through cache
+  category: Concepts
+- id: cqrs_es
+  display: CQRS & Event Sourcing
+  aliases:
+  - cqrs
+  - event sourcing
+  category: Concepts
+- id: pytorch
+  display: PyTorch
+  aliases:
+  - pytorch
+  - torch
+  category: Concepts
+- id: tensorflow
+  display: TensorFlow
+  aliases:
+  - tensorflow
+  - keras
+  category: Concepts
+- id: llm_engineering
+  display: LLM Engineering & RAG
+  aliases:
+  - llm
+  - llms
+  - large language models
+  - rag
+  - retrieval-augmented generation
+  - langchain
+  - llamaindex
+  category: Concepts
+- id: oauth_oidc
+  display: OAuth & OpenID Connect
+  aliases:
+  - oauth
+  - oauth 2.0
+  - oauth2
+  - openid connect
+  - oidc
+  - saml
+  category: Concepts
+- id: websockets
+  display: WebSockets
+  aliases:
+  - websocket
+  - websockets
+  - socket.io
+  - real-time streaming
+  category: Concepts

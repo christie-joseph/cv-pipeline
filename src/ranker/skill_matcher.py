@@ -1,22 +1,46 @@
 import re
 from pathlib import Path
-from typing import List, Dict, Set, Tuple
+from typing import List, Dict, Set, Tuple, Optional
 from collections import defaultdict
 from rapidfuzz import fuzz
 from ..models.experience import SkillTaxonomy
 
 
 class MatchResult:
-    def __init__(self, matched: List[Tuple[str, str]], missing: List[str]):
+    def __init__(
+        self,
+        matched: List[Tuple[str, str]],
+        missing: List[str],
+        required_matched: Optional[List[str]] = None,
+        required_missing: Optional[List[str]] = None,
+        preferred_matched: Optional[List[str]] = None,
+        preferred_missing: Optional[List[str]] = None,
+    ):
         self.matched = matched
         self.missing = missing
+        self.required_matched = required_matched or []
+        self.required_missing = required_missing or []
+        self.preferred_matched = preferred_matched or []
+        self.preferred_missing = preferred_missing or []
 
     @property
     def match_percentage(self) -> float:
-        total = len(self.matched) + len(self.missing)
-        if total == 0:
-            return 100.0
-        return round((len(self.matched) / total) * 100, 1)
+        req_total = len(self.required_matched) + len(self.required_missing)
+        pref_total = len(self.preferred_matched) + len(self.preferred_missing)
+
+        if req_total > 0 and pref_total > 0:
+            # 70% weight for required/must-have skills, 30% weight for preferred/bonus skills
+            req_pct = len(self.required_matched) / req_total
+            pref_pct = len(self.preferred_matched) / pref_total
+            weighted = (0.70 * req_pct + 0.30 * pref_pct) * 100
+            return round(weighted, 1)
+        elif req_total > 0:
+            return round((len(self.required_matched) / req_total) * 100, 1)
+        else:
+            total = len(self.matched) + len(self.missing)
+            if total == 0:
+                return 100.0
+            return round((len(self.matched) / total) * 100, 1)
 
 
 class SkillMatcher:
@@ -52,7 +76,14 @@ class SkillMatcher:
         right_b = r"\b" if re.search(r"\w$", term) else r"(?!\w)"
         return f"{left_b}{escaped}{right_b}"
 
-    def match(self, jd_skills: List[str], resume_tags: List[str], resume_text: str = "") -> MatchResult:
+    def match(
+        self,
+        jd_skills: List[str],
+        resume_tags: List[str],
+        resume_text: str = "",
+        required_skills: Optional[List[str]] = None,
+        preferred_skills: Optional[List[str]] = None
+    ) -> MatchResult:
         matched: List[Tuple[str, str]] = []
         missing: List[str] = []
         seen_matched: Set[str] = set()
@@ -138,6 +169,8 @@ class SkillMatcher:
         filtered_missing = []
         for m in missing:
             m_lower = m.lower().strip()
+            if m_lower in matched_canonical_lower:
+                continue
             if len(m_lower.split()) == 1:
                 is_subphrase = any(
                     len(other.split()) > 1 and re.search(r"\b" + re.escape(m_lower) + r"\b", other)
@@ -149,4 +182,43 @@ class SkillMatcher:
             filtered_missing.append(m)
 
         unique_missing = list(dict.fromkeys(filtered_missing))
-        return MatchResult(matched=matched, missing=unique_missing)
+
+        # Classify matched and missing into required vs preferred
+        req_set = {s.lower().strip() for s in (required_skills or [])}
+        pref_set = {s.lower().strip() for s in (preferred_skills or [])}
+
+        required_matched = []
+        preferred_matched = []
+        for canonical, method in matched:
+            c_lower = canonical.lower()
+            if c_lower in req_set:
+                required_matched.append(canonical)
+            elif c_lower in pref_set:
+                preferred_matched.append(canonical)
+            elif not req_set and not pref_set:
+                required_matched.append(canonical)
+            else:
+                # Default to preferred if not explicitly in required
+                preferred_matched.append(canonical)
+
+        required_missing = []
+        preferred_missing = []
+        for m in unique_missing:
+            m_lower = m.lower()
+            if m_lower in req_set:
+                required_missing.append(m)
+            elif m_lower in pref_set:
+                preferred_missing.append(m)
+            elif not req_set and not pref_set:
+                required_missing.append(m)
+            else:
+                preferred_missing.append(m)
+
+        return MatchResult(
+            matched=matched,
+            missing=unique_missing,
+            required_matched=required_matched,
+            required_missing=required_missing,
+            preferred_matched=preferred_matched,
+            preferred_missing=preferred_missing
+        )

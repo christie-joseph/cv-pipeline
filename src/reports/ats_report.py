@@ -61,6 +61,9 @@ def generate_ats_report(
         truncated = content[:width - 4]
         return f"| {truncated:<{width - 4}} |"
 
+    req_tot = len(match_result.required_matched) + len(match_result.required_missing)
+    pref_tot = len(match_result.preferred_matched) + len(match_result.preferred_missing)
+
     lines = [
         border,
         fmt_row("              ATS MATCH REPORT"),
@@ -68,10 +71,17 @@ def generate_ats_report(
         fmt_row(f"Role Target:     {role_str}"),
         fmt_row(f"Seniority:       {seniority_str}"),
         fmt_row(f"Overall Match:   {match_pct}%"),
+    ]
+
+    if req_tot > 0 and pref_tot > 0:
+        lines.append(fmt_row(f"  - Required:    {len(match_result.required_matched)}/{req_tot} matched"))
+        lines.append(fmt_row(f"  - Preferred:   {len(match_result.preferred_matched)}/{pref_tot} matched"))
+
+    lines.extend([
         fmt_row(f"Keyword Density: {keyword_density}%"),
         border,
         fmt_row("[+] Matched Skills")
-    ]
+    ])
 
     for item, method in match_result.matched:
         clean_item = (item[:16] + "..") if len(item) > 18 else item
@@ -82,11 +92,23 @@ def generate_ats_report(
         lines.append(fmt_row("  (None detected)"))
 
     lines.append(border)
-    lines.append(fmt_row("[-] Missing Priority Skills"))
 
-    for item in match_result.missing[:8]:
-        clean_item = (item[:36] + "..") if len(item) > 38 else item
-        lines.append(fmt_row(f"  * {clean_item}"))
+    # Missing skills breakdown
+    if match_result.required_missing:
+        lines.append(fmt_row("[-] Missing Critical Skills (Required)"))
+        for item in match_result.required_missing[:5]:
+            clean_item = (item[:36] + "..") if len(item) > 38 else item
+            lines.append(fmt_row(f"  * {clean_item}"))
+        if match_result.preferred_missing:
+            lines.append(fmt_row("[-] Missing Bonus Skills (Preferred)"))
+            for item in match_result.preferred_missing[:4]:
+                clean_item = (item[:36] + "..") if len(item) > 38 else item
+                lines.append(fmt_row(f"  * {clean_item}"))
+    else:
+        lines.append(fmt_row("[-] Missing Priority Skills"))
+        for item in match_result.missing[:8]:
+            clean_item = (item[:36] + "..") if len(item) > 38 else item
+            lines.append(fmt_row(f"  * {clean_item}"))
 
     if not match_result.missing:
         lines.append(fmt_row("  (None missing!)"))
