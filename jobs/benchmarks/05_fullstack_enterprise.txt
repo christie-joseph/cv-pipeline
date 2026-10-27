@@ -1,0 +1,25 @@
+Role: Senior Full-Stack Enterprise Engineer
+Company: EnterpriseFlow Software
+Location: San Francisco, CA
+
+About Us:
+EnterpriseFlow Software develops intelligent enterprise process automation platforms serving Fortune 500 financial and logistics organizations worldwide.
+
+Responsibilities:
+- Build mission-critical enterprise web applications spanning robust backend services to modern frontends.
+- Architect high-throughput transactional APIs with rigorous security and auditing standards.
+- Develop interactive, accessible single-page web applications for enterprise power users.
+- Drive automated CI/CD releases and containerized cloud deployments.
+
+Required Qualifications:
+- 5+ years of full-stack software development experience in enterprise production environments.
+- Strong backend experience with Java, Spring Boot, or Go developing RESTful and GraphQL APIs.
+- Strong frontend proficiency in React, TypeScript, modern JavaScript, and HTML/CSS.
+- Production experience with relational databases, specifically PostgreSQL, including schema design and query tuning.
+- Hands-on experience with Docker containerization and cloud deployments on AWS.
+- Strong understanding of automated testing using JUnit, Jest, and integration test frameworks.
+
+Preferred Qualifications:
+- Experience with Next.js or server-side rendering architectures.
+- Familiarity with event-driven messaging using Apache Kafka or RabbitMQ.
+- Experience with Redis caching and distributed session management.

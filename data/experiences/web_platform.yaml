@@ -1,0 +1,25 @@
+id: web_platform
+company: "PixelForge Studios"
+start: "2018"
+end: "2020"
+importance: 7
+optional: false
+tags: [fullstack, frontend, typescript, react, nextjs, nodejs, graphql, postgresql, tailwind]
+
+titles:
+  default: "Full-Stack Developer"
+  variants:
+    - "Frontend Software Engineer"
+    - "Software Engineer (Web Platform)"
+    - "Web Application Developer"
+
+bullets:
+  - id: b1
+    text: "Developed responsive customer dashboard in React and Next.js with TypeScript, serving 350K monthly active users with sub-1.2s Largest Contentful Paint."
+    tags: [react, nextjs, typescript, frontend, performance]
+  - id: b2
+    text: "Architected federated GraphQL API layer backed by Node.js and PostgreSQL, replacing 18 legacy REST endpoints and cutting frontend network payload by 40%."
+    tags: [graphql, nodejs, postgresql, backend]
+  - id: b3
+    text: "Created modular design system containing 35+ accessible components adhering to WCAG 2.1 AA standards, standardizing UI development across 3 teams."
+    tags: [design-systems, accessibility, typescript, ui]

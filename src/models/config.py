@@ -152,6 +152,7 @@ class PipelineConfig(BaseModel):
     minimum_similarity: float = 0.25
     mmr_lambda: float = 0.7
     debug: bool = False
+    offline: bool = False
     weights: WeightsConfig = Field(default_factory=WeightsConfig)
     embedding_model: str = "BAAI/bge-small-en-v1.5"
     rewriter: RewriterConfig = Field(default_factory=RewriterConfig)

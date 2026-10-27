@@ -1,0 +1,26 @@
+Role: Senior Backend Infrastructure Engineer
+Company: CloudScale Systems
+Location: Remote / San Francisco
+
+About Us:
+CloudScale Systems builds planetary-scale infrastructure platforms for enterprise developers worldwide. We offer comprehensive health benefits, 401(k) matching, flexible PTO, and home office stipends.
+
+Responsibilities:
+- Architect and maintain highly scalable backend microservices and distributed storage systems.
+- Own core inter-service communication protocols and data serialization pipelines.
+- Collaborate with platform and product teams to drive system architecture and high availability.
+- Mentor junior and mid-level engineers in distributed systems design patterns.
+
+Required Qualifications:
+- 5+ years of software engineering experience building scalable backend distributed systems.
+- Strong proficiency in Go or Java or C++ with deep understanding of concurrency and memory models.
+- Production experience with Kubernetes, Docker, and containerized microservices orchestration.
+- Hands-on experience with cloud infrastructure on AWS or GCP.
+- Deep expertise in gRPC, REST APIs, and event-driven messaging using Apache Kafka.
+- Solid experience with relational and caching databases including PostgreSQL and Redis.
+
+Preferred Qualifications:
+- Familiarity with Infrastructure as Code using Terraform.
+- Experience with real-time monitoring and observability stacks like Prometheus and Grafana.
+- Understanding of distributed consensus algorithms (Raft, Paxos).
+- Bachelor's degree in Computer Science or related engineering field.

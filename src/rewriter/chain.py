@@ -1,3 +1,4 @@
+import os
 import re
 import logging
 from typing import List, Tuple, Optional, Dict
@@ -57,10 +58,21 @@ def _validate_rewrite_guardrails(original: str, rewritten: str) -> bool:
     return True
 
 
+def _needs_rewrite(bullet_text: str, jd_keywords: List[str]) -> bool:
+    """Selective filter: skip rewriting if bullet already contains 2+ high-value keywords and a metric."""
+    if not bullet_text:
+        return False
+    text_lower = bullet_text.lower()
+    kw_hits = sum(1 for kw in jd_keywords[:8] if len(kw) > 1 and kw.lower() in text_lower)
+    has_metric = bool(re.search(r"\b\d+(?:\.\d+)?%?\b|\b\d+[KMB]\b", bullet_text, re.IGNORECASE))
+    return not (kw_hits >= 2 and has_metric)
+
+
 class RewriterChain:
     def __init__(self, config: PipelineConfig):
         self.config = config
         self.rewriter_cfg = config.rewriter
+        self.is_offline = getattr(config, 'offline', False) or os.getenv('CV_OFFLINE') == '1'
 
         # Option A: Stacked Cloud LLM API Pool (Gemini, Groq, OpenRouter, Cerebras)
         self.option_a = ApiRewriter(
@@ -110,6 +122,20 @@ class RewriterChain:
             return bullets, ["Disabled"] * len(bullets)
 
         prompt = self.config.rewriter_prompt
+
+        # Offline mode bypass: route immediately to Option C (or local Ollama if healthy)
+        if self.is_offline:
+            rprint("[cyan][*] Offline Mode active. Skipping Cloud API pool...[/cyan]")
+            results = []
+            tiers = []
+            for idx, b in enumerate(bullets):
+                b_tags = bullets_tags[idx] if bullets_tags and idx < len(bullets_tags) else None
+                res_text, res_tier = self._rewrite_single_fallback(
+                    b, jd_keywords, prompt, bullet_tags=b_tags, keyword_scores=keyword_scores
+                )
+                results.append(res_text)
+                tiers.append(res_tier)
+            return results, tiers
 
         # Tier A: Cloud LLM API Pool Batch
         if self.option_a.is_available():

@@ -144,18 +144,25 @@ class SkillMatcher:
                         seen_matched.add(canonical)
                     found = True
 
-            # Pass 4: RapidFuzz Fuzzy Match
+            # Pass 4: Length-Aware RapidFuzz & Damerau-Levenshtein Fuzzy Match
             if not found and len(jd_skill_lower) > 2:
+                from rapidfuzz.distance import DamerauLevenshtein
+                is_short = len(jd_skill_lower) <= 6
+                min_ratio = 82 if is_short else 78
+                max_edit_dist = 1 if is_short else 2
+
                 for tag in resume_tags_lower:
                     if len(tag) > 2:
                         score = fuzz.ratio(jd_skill_lower, tag)
-                        if score >= 85:
-                            canonical = self.alias_map.get(jd_skill_lower, jd_skill.title())
-                            if canonical not in seen_matched:
-                                matched.append((canonical, f"fuzzy match ({int(score)}%)"))
-                                seen_matched.add(canonical)
-                            found = True
-                            break
+                        if score >= min_ratio:
+                            edit_dist = DamerauLevenshtein.distance(jd_skill_lower, tag)
+                            if edit_dist <= max_edit_dist:
+                                canonical = self.alias_map.get(jd_skill_lower, jd_skill.title())
+                                if canonical not in seen_matched:
+                                    matched.append((canonical, f"fuzzy match ({int(score)}%)"))
+                                    seen_matched.add(canonical)
+                                found = True
+                                break
 
             # Only append to missing if it is not a generic non-technical stopword
             if not found and jd_skill_lower not in GENERIC_WORDS:

@@ -1,3 +1,4 @@
+from pathlib import Path
 import sys
 import argparse
 import logging
@@ -20,6 +21,8 @@ def main():
     parser.add_argument("--manifest", action="store_true", help="Display reproducibility manifest")
     parser.add_argument("--copy", action="store_true", help="Copy generated LaTeX code to system clipboard")
     parser.add_argument("--debug", action="store_true", help="Enable verbose debug trace logging")
+    parser.add_argument("--offline", action="store_true", help="Run 100% offline — skip cloud LLM APIs, use deterministic rule rewriter")
+    parser.add_argument("--format", choices=["pdf", "markdown", "all"], default="pdf", help="Output format: pdf (default), markdown, or all")
 
     args = parser.parse_args()
 
@@ -53,6 +56,8 @@ def main():
     if args.debug:
         config.debug = True
         config.output.debug = True
+    if args.offline:
+        config.offline = True
 
     # Configure logging based on debug flag
     is_debug = config.debug or config.output.debug
@@ -117,6 +122,18 @@ def main():
         print("=" * 60)
         print(result.latex_string)
         print("=" * 60)
+
+
+    # Handle Markdown export if requested
+    if args.format in ["markdown", "all"]:
+        from .renderer.markdown_exporter import MarkdownExporter
+        md_exporter = MarkdownExporter()
+        md_text = md_exporter.export(result.tailored_resume)
+        md_out_dir = Path("output")
+        md_out_dir.mkdir(exist_ok=True)
+        md_path = md_out_dir / "resume_tailored.md"
+        md_path.write_text(md_text, encoding="utf-8")
+        console.print(f"[bold green][+] Tailored Markdown resume exported to {md_path}![/bold green]")
 
     # Open PDF in default viewer if compiled
     if result.pdf_bytes and config.output.open_pdf:

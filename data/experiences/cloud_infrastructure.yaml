@@ -1,0 +1,28 @@
+id: cloud_infrastructure
+company: "Nimbus Cloud Solutions"
+start: "2022"
+end: "Present"
+importance: 9
+optional: false
+tags: [backend, cloud, aws, kubernetes, terraform, go, grpc, microservices, cicd, devops]
+
+titles:
+  default: "Senior Cloud Infrastructure Engineer"
+  variants:
+    - "Senior Infrastructure Engineer"
+    - "Senior Backend Engineer"
+    - "Cloud Platform Engineer"
+
+bullets:
+  - id: b1
+    text: "Architected a multi-region Kubernetes platform across AWS EKS managing 120+ microservices, sustaining 99.99% availability under 250K peak RPS."
+    tags: [aws, kubernetes, microservices, scalability]
+  - id: b2
+    text: "Designed high-throughput gRPC inter-service communication mesh with distributed tracing, slashing P99 API latency from 180ms to 42ms."
+    tags: [grpc, backend, go, performance, distributed-systems]
+  - id: b3
+    text: "Automated end-to-end cloud infrastructure provisioning via Terraform and GitOps pipelines, reducing environment deployment time by 75%."
+    tags: [terraform, devops, cicd, automation]
+  - id: b4
+    text: "Orchestrated Prometheus and Grafana observability stack with real-time anomaly alerting, decreasing mean time to resolution (MTTR) by 45%."
+    tags: [monitoring, observability, devops]

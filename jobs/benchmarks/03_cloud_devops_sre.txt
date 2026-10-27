@@ -1,0 +1,25 @@
+Role: Senior Cloud Platform & SRE Engineer
+Company: Apex Infrastructure
+Location: San Francisco / Hybrid
+
+About Us:
+Apex Infrastructure powers mission-critical banking and fintech infrastructure. We operate multi-cloud environments requiring 99.999% reliability, automated self-healing, and security.
+
+Responsibilities:
+- Build and operate production Kubernetes clusters across AWS and multi-cloud environments.
+- Author robust Infrastructure as Code configurations using Terraform and Helm.
+- Establish automated CI/CD deployment pipelines with zero-downtime blue/green releases.
+- Implement comprehensive observability, distributed tracing, metrics, and incident runbooks.
+
+Required Qualifications:
+- 4+ years of dedicated DevOps, SRE, or Cloud Platform Engineering experience.
+- Deep hands-on expertise with AWS cloud services (EKS, EC2, VPC, IAM, S3).
+- Advanced production experience deploying and scaling Kubernetes clusters and Docker containers.
+- Strong proficiency in Terraform for Infrastructure as Code and GitOps automation.
+- Extensive experience configuring Prometheus, Grafana, and OpenTelemetry monitoring.
+- Solid scripting and automation skills in Python, Go, or Bash.
+
+Preferred Qualifications:
+- Experience with service mesh architectures like Istio or Linkerd.
+- Familiarity with CI/CD platforms like GitHub Actions, GitLab CI, or ArgoCD.
+- Understanding of Linux kernel tuning and network packet troubleshooting.

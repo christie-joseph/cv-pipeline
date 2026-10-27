@@ -1,0 +1,25 @@
+id: data_engineering
+company: "DataVault Analytics"
+start: "2017"
+end: "2018"
+importance: 6
+optional: false
+tags: [data, python, apache-spark, airflow, snowflake, sql, docker, etl]
+
+titles:
+  default: "Data Platform Engineer"
+  variants:
+    - "Data Engineer"
+    - "ETL Software Engineer"
+    - "Python Data Engineer"
+
+bullets:
+  - id: b1
+    text: "Constructed distributed ETL data pipelines using Python, Apache Spark, and Apache Airflow, processing 4.2TB of daily behavioral clickstream logs."
+    tags: [python, spark, airflow, data-engineering, etl]
+  - id: b2
+    text: "Automated warehouse ingestion pipelines loading normalized dimensional models into Snowflake, accelerating executive analytical queries by 3x."
+    tags: [snowflake, sql, analytics, database]
+  - id: b3
+    text: "Containerized data validation workflows using Docker and Great Expectations, catching data pipeline anomalies before downstream reporting."
+    tags: [docker, data-quality, python]

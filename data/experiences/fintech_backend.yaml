@@ -1,0 +1,28 @@
+id: fintech_backend
+company: "PayStream Technologies"
+start: "2020"
+end: "2022"
+importance: 8
+optional: false
+tags: [backend, java, spring-boot, postgresql, kafka, redis, microservices, junit, distributed-systems]
+
+titles:
+  default: "Backend Software Engineer"
+  variants:
+    - "Java Software Engineer"
+    - "Software Engineer (Backend)"
+    - "Distributed Systems Engineer"
+
+bullets:
+  - id: b1
+    text: "Engineered core transaction ledger processing $45M in daily payments using Java and Spring Boot with zero reconciliation discrepancy."
+    tags: [java, spring-boot, backend, transactions]
+  - id: b2
+    text: "Implemented Apache Kafka event streaming pipeline handling 15M financial events daily with idempotent exactly-once processing."
+    tags: [kafka, streaming, distributed-systems]
+  - id: b3
+    text: "Optimized PostgreSQL query execution and connection pooling alongside Redis multi-tier caching, reducing database CPU load by 35%."
+    tags: [postgresql, redis, caching, performance]
+  - id: b4
+    text: "Authored comprehensive JUnit and integration test suites achieving 88% branch coverage, eliminating critical production regression defects."
+    tags: [testing, quality, java]

@@ -1,17 +1,25 @@
 projects:
-  - id: "manna_market"
-    title: "Manna Market"
-    tech_stack: ["PostgreSQL", "MongoDB", "PostGIS", "Kubernetes", "Stripe Connect", "CI/CD"]
-    dates: "Jan 2024 -- Present"
+  - id: "distributed_kvstore"
+    title: "Distributed Key-Value Store"
+    tech_stack: ["Go", "Raft Consensus", "LevelDB", "gRPC", "Docker"]
+    dates: "2023 -- Present"
     bullets:
-      - "Architected a scalable multi-tenant marketplace leveraging a hybrid PostgreSQL and MongoDB data architecture; optimized storage efficiency by 30% while maintaining sub-100ms API latency for high-traffic environments."
-      - "Engineered a high-performance spatial discovery engine utilizing PostGIS and drive-time isochrones, accelerating location-based queries to sub-50ms and eliminating delivery boundary errors."
-      - "Streamlined merchant onboarding through Stripe Connect integration and RBAC protocols, reducing lead times from days to minutes while deploying via a zero-downtime Kubernetes CI/CD pipeline."
+      - "Implemented Raft distributed consensus protocol from scratch in Go, achieving linearizable read/write operations across a 5-node cluster with sub-10ms commit latency."
+      - "Engineered a log-structured merge tree (LSM) storage backend backed by LevelDB with write-ahead logging, sustaining 80K ops/sec on commodity hardware."
+      - "Packaged multi-node cluster test harness using Docker Compose, verifying automated leader election under simulated network partition scenarios."
 
-  - id: "powershell_clone"
-    title: "Powershell Clone"
-    tech_stack: ["C++", "Unix", "Systems Programming"]
-    dates: "May 2023 -- Dec 2023"
+  - id: "event_processor"
+    title: "Real-Time Event Stream Processor"
+    tech_stack: ["Rust", "Apache Kafka", "WebSockets", "Redis"]
+    dates: "2022 -- 2023"
     bullets:
-      - "Developed a functional C++ Unix-style shell featuring robust command parsing, built-in utilities, and efficient PATH-based resolution logic."
-      - "Implemented external process execution for native system commands, ensuring a responsive and deterministic interactive user experience."
+      - "Built an asynchronous event ingestion engine in Rust processing 500K events/sec with memory-safe concurrency and sub-5ms processing delay."
+      - "Designed backpressure-aware Kafka consumer groups with Redis sliding-window deduplication, eliminating duplicate message delivery under high burst loads."
+
+  - id: "design_system"
+    title: "Accessible UI Component Library"
+    tech_stack: ["React", "TypeScript", "Storybook", "Tailwind CSS", "Jest"]
+    dates: "2021 -- 2022"
+    bullets:
+      - "Created a WCAG 2.1 AA compliant design system containing 40+ modular components published to internal NPM registry and adopted by 4 web applications."
+      - "Configured automated visual regression testing via Storybook and Jest, catching 100% of breaking style regressions in CI before production merges."

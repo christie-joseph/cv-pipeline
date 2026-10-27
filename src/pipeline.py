@@ -29,11 +29,12 @@ class Pipeline:
         self.config = config or PipelineConfig.load_from_yaml()
         
         self.embedding_model = None
-        try:
-            from fastembed import TextEmbedding
-            self.embedding_model = TextEmbedding(model_name=self.config.embedding_model)
-        except Exception as e:
-            logger.info(f"FastEmbed loading note ({e}). Continuing with TF-IDF fallback...")
+        if not getattr(self.config, "offline", False):
+            try:
+                from fastembed import TextEmbedding
+                self.embedding_model = TextEmbedding(model_name=self.config.embedding_model)
+            except Exception as e:
+                logger.info(f"FastEmbed loading note ({e}). Continuing with TF-IDF fallback...")
 
         self.parser = JDParser(embedding_model=self.embedding_model)
         self.exp_ranker = ExperienceRanker(config=self.config, embedding_model=self.embedding_model)

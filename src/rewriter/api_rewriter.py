@@ -81,21 +81,18 @@ class ApiRewriter(BaseRewriter):
         if not self.is_available():
             raise RuntimeError("No Cloud LLM API keys configured.")
 
-        keywords_str = ", ".join(jd_keywords[:10])
-        bullets_formatted = "\n".join(f"{i+1}. {b}" for i, b in enumerate(bullets))
-        
+        # Ultra-compact machine-optimized representation
         system_prompt = (
-            "You are a strict, non-hallucinating resume editor. The original bullet points are the single SOURCE OF TRUTH. "
-            "Reword wording ONLY for alignment with job description keywords. Never invent new metrics, tools, responsibilities, or facts. "
-            "You will be given a list of numbered bullets. Respond ONLY with a valid JSON array of strings containing the reworded bullets in exact corresponding order. "
-            "Example response format: [\"reworded bullet 1\", \"reworded bullet 2\"]"
+            "Task: Align resume bullets with target keywords. "
+            "Rules: preserve facts/numbers/tech exactly; no hallucinations. "
+            "Output format: JSON object {\"out\": [\"reworded 1\", \"reworded 2\"]}"
         )
-        
-        user_prompt = (
-            f"Target Job Keywords: {keywords_str}\n\n"
-            f"Instructions:\n{prompt_template}\n\n"
-            f"Bullets to rewrite:\n{bullets_formatted}"
-        )
+
+        compact_payload = {
+            "kw": [k for k in jd_keywords[:8] if len(k) > 1],
+            "b": bullets
+        }
+        user_prompt = json.dumps(compact_payload, separators=(",", ":"))
 
         last_error = None
         for provider_client in self.pool:
@@ -141,18 +138,27 @@ class ApiRewriter(BaseRewriter):
                             content = choice.message.content
                             parsed_list = None
                             try:
-                                parsed_list = json.loads(content)
+                                raw_json = json.loads(content)
+                                if isinstance(raw_json, dict) and "out" in raw_json:
+                                    parsed_list = raw_json["out"]
+                                elif isinstance(raw_json, list):
+                                    parsed_list = raw_json
                             except json.JSONDecodeError:
                                 # Strip markdown fences if present
                                 content_stripped = re.sub(r"^```(?:json)?\s*", "", content, flags=re.MULTILINE)
                                 content_stripped = re.sub(r"```\s*$", "", content_stripped, flags=re.MULTILINE).strip()
                                 try:
-                                    parsed_list = json.loads(content_stripped)
+                                    raw_json = json.loads(content_stripped)
+                                    if isinstance(raw_json, dict) and "out" in raw_json:
+                                        parsed_list = raw_json["out"]
+                                    elif isinstance(raw_json, list):
+                                        parsed_list = raw_json
                                 except json.JSONDecodeError:
-                                    json_match = re.search(r"\[.*?\]", content_stripped, re.DOTALL)
+                                    json_match = re.search(r"\{.*?\"out\":\s*(\[.*?\]).*?\}|(\[.*?\])", content_stripped, re.DOTALL)
                                     if json_match:
+                                        target_str = json_match.group(1) or json_match.group(2)
                                         try:
-                                            parsed_list = json.loads(json_match.group(0))
+                                            parsed_list = json.loads(target_str)
                                         except json.JSONDecodeError:
                                             pass
 

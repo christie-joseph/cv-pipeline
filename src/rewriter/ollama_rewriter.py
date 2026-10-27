@@ -86,14 +86,13 @@ class OllamaRewriter(BaseRewriter):
         # Pace requests to give GPU/CPU breathing room between bullets
         self.pacer.acquire("ollama", self.rate_limit.ollama_request_interval)
 
-        keywords_str = ", ".join(jd_keywords[:10])
+        # Ultra-compact machine representation for Ollama
+        top_kws = [k for k in jd_keywords[:6] if len(k) > 1]
         prompt = (
-            "You are a strict, non-hallucinating resume editor. The original bullet point is the single SOURCE OF TRUTH. "
-            "Never invent new metrics, tools, responsibilities, or facts. Return only the single reworded bullet.\n\n"
-            f"{prompt_template}\n\n"
-            f"Original Bullet: {bullet_text}\n"
-            f"Keywords: {keywords_str}\n"
-            f"Rewritten Bullet:"
+            "Align resume bullet to keywords. Keep facts and numbers exact. Output rewritten bullet only.\n"
+            f"Keywords: {', '.join(top_kws)}\n"
+            f"Input: {bullet_text}\n"
+            "Output:"
         )
 
         payload = {

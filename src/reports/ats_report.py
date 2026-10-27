@@ -1,9 +1,10 @@
 import re
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 from ..ranker.skill_matcher import MatchResult
 from ..models.resume import TailoredResume
 from ..models.jd_profile import JDProfile
-from ..ranker.faang_scorer import STRONG_ACTION_VERBS
+from ..ranker.faang_scorer import STRONG_ACTION_VERBS, WEAK_VERBS
+from ..ranker.cliche_detector import ClicheDetector
 
 
 def generate_ats_report(
@@ -18,18 +19,31 @@ def generate_ats_report(
     all_bullets = [b for e in resume.selected_experiences for b in e.selected_bullets]
     total_bullets = len(all_bullets)
 
+    cliche_detector = ClicheDetector()
+    cliche_matches = []
+
     # 1. Compute bullet quality signals
     metric_count = 0
     strong_verb_count = 0
+    weak_verb_count = 0
+
     for sel_b in all_bullets:
         b_text = sel_b.rewritten_text or sel_b.bullet.text
         # Metrics check
         if re.search(r"\b\d+(?:\.\d+)?%?\b|\b\d+[KMB]\b|\b\d+\+?\s*(users|requests|events|gb|tb|ms|s)\b", b_text, re.IGNORECASE):
             metric_count += 1
+
         # Action verb check
         first_word = re.sub(r'[^a-z]', '', b_text.lower().split()[0]) if b_text.split() else ""
         if first_word in STRONG_ACTION_VERBS:
             strong_verb_count += 1
+        elif first_word in WEAK_VERBS:
+            weak_verb_count += 1
+
+        # Cliché & overused anti-pattern check
+        c_found = cliche_detector.detect(b_text)
+        if c_found:
+            cliche_matches.extend(c_found)
 
     # 2. Compute Keyword Density Score
     resume_full_text = " ".join([b.rewritten_text or b.bullet.text for b in all_bullets]).lower()
@@ -54,7 +68,7 @@ def generate_ats_report(
     role_str = (jd_profile.role[:28] + "..") if jd_profile.role and len(jd_profile.role) > 30 else (jd_profile.role or "Unspecified")
     seniority_str = jd_profile.seniority or "Standard"
 
-    width = 48
+    width = 50
     border = "+" + "-" * (width - 2) + "+"
 
     def fmt_row(content: str) -> str:
@@ -97,26 +111,60 @@ def generate_ats_report(
     if match_result.required_missing:
         lines.append(fmt_row("[-] Missing Critical Skills (Required)"))
         for item in match_result.required_missing[:5]:
-            clean_item = (item[:36] + "..") if len(item) > 38 else item
+            clean_item = (item[:38] + "..") if len(item) > 40 else item
             lines.append(fmt_row(f"  * {clean_item}"))
         if match_result.preferred_missing:
             lines.append(fmt_row("[-] Missing Bonus Skills (Preferred)"))
             for item in match_result.preferred_missing[:4]:
-                clean_item = (item[:36] + "..") if len(item) > 38 else item
+                clean_item = (item[:38] + "..") if len(item) > 40 else item
                 lines.append(fmt_row(f"  * {clean_item}"))
     else:
         lines.append(fmt_row("[-] Missing Priority Skills"))
         for item in match_result.missing[:8]:
-            clean_item = (item[:36] + "..") if len(item) > 38 else item
+            clean_item = (item[:38] + "..") if len(item) > 40 else item
             lines.append(fmt_row(f"  * {clean_item}"))
 
     if not match_result.missing:
         lines.append(fmt_row("  (None missing!)"))
 
+    # 4. ATS Flags & Anti-Pattern Warnings
+    ats_flags = []
+    if metric_count < total_bullets * 0.5:
+        ats_flags.append(f"Low metrics density: only {metric_count}/{total_bullets} quantified")
+    if weak_verb_count > 0:
+        ats_flags.append(f"{weak_verb_count} bullet(s) open with passive/weak verbs")
+    if cliche_matches:
+        ats_flags.append(f"{len(cliche_matches)} cliché/overused phrase(s) detected")
+
+    if ats_flags:
+        lines.append(border)
+        lines.append(fmt_row("[!] ATS Flags & Risk Warnings"))
+        for flag in ats_flags[:3]:
+            lines.append(fmt_row(f"  ! {flag}"))
+
+    # 5. Actionable High-Impact Quick Wins
+    quick_wins = []
+    if match_result.required_missing:
+        top_missing = match_result.required_missing[0]
+        quick_wins.append(f"Add '{top_missing}' — top missing required JD skill")
+    if cliche_matches:
+        top_cliche = cliche_matches[0]
+        quick_wins.append(f"Replace '{top_cliche.phrase}' with: {top_cliche.suggestion.split(',')[0].strip()}")
+    elif weak_verb_count > 0:
+        quick_wins.append("Strengthen opening verbs with: Architected, Orchestrated")
+    if metric_count < total_bullets * 0.7:
+        quick_wins.append("Add numbers/KPIs (% improvement, scale, throughput)")
+
+    if quick_wins:
+        lines.append(border)
+        lines.append(fmt_row("[*] Actionable Quick Wins (Top ROI)"))
+        for i, win in enumerate(quick_wins[:3]):
+            lines.append(fmt_row(f"  {i+1}. {win}"))
+
     lines.extend([
         border,
         fmt_row(f"Quality:    {metric_count}/{total_bullets} metrics, {strong_verb_count}/{total_bullets} strong verbs"),
-        fmt_row(f"Rewriter:   {rewriter_tier[:32]}"),
+        fmt_row(f"Rewriter:   {rewriter_tier[:34]}"),
         fmt_row(f"Selected:   {selected_exp_count} experiences, {total_bullets} bullets"),
         border
     ])

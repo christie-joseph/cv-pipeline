@@ -1,0 +1,25 @@
+Role: Senior Data Platform Engineer
+Company: InsightStream Analytics
+Location: Remote
+
+About Us:
+InsightStream Analytics processes tens of petabytes of behavioral data for global e-commerce and retail brands to power predictive merchandising and real-time pricing models.
+
+Responsibilities:
+- Design, build, and optimize large-scale distributed batch and real-time streaming data pipelines.
+- Partner with data scientists, ML engineers, and business analysts to provision reliable data models.
+- Maintain data warehouse and lakehouse architectures ensuring low-latency analytical queries.
+- Implement automated data quality checks, anomaly detection, and schema evolution protocols.
+
+Required Qualifications:
+- 4+ years of data engineering experience operating petabyte-scale data pipelines.
+- Strong software development skills in Python and SQL.
+- Deep hands-on experience with Apache Spark (PySpark) and distributed data processing.
+- Production proficiency building automated DAG workflows in Apache Airflow.
+- Extensive experience designing dimensional models and queries in Snowflake, BigQuery, or Redshift.
+- Hands-on experience containerizing data applications using Docker.
+
+Preferred Qualifications:
+- Experience with real-time stream processing using Apache Kafka or Apache Flink.
+- Familiarity with modern data lakehouse table formats (Apache Iceberg, Delta Lake).
+- Knowledge of DataOps and data testing frameworks like dbt or Great Expectations.

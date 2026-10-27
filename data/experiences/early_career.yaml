@@ -1,0 +1,24 @@
+id: early_career
+company: "CodeCraft Labs"
+start: "2016"
+end: "2017"
+importance: 5
+optional: true
+tags: [systems, cpp, linux, git, unit-testing, agile]
+
+titles:
+  default: "Junior Software Engineer"
+  variants:
+    - "Associate Software Developer"
+    - "Junior Systems Engineer"
+
+bullets:
+  - id: b1
+    text: "Engineered core C++ CLI diagnostic tools on Linux, resolving 45+ customer-reported concurrency and memory leak tickets."
+    tags: [cpp, linux, debugging, systems]
+  - id: b2
+    text: "Built unit and regression test harnesses using Google Test, raising codebase test coverage from 62% to 81%."
+    tags: [testing, quality, cpp]
+  - id: b3
+    text: "Collaborated in bi-weekly Agile sprints, actively contributing to peer code reviews and automated CI build verification."
+    tags: [agile, git, teamwork]

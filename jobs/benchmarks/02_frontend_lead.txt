@@ -1,0 +1,25 @@
+Role: Lead Frontend Software Engineer
+Company: Interface Labs
+Location: San Francisco, CA
+
+About Us:
+Interface Labs crafts next-generation collaborative design software and interactive client canvases. We value aesthetic craft, deep technical rigor, and developer empowerment.
+
+Responsibilities:
+- Lead the architecture and implementation of complex, client-side web application experiences.
+- Own Core Web Vitals, web rendering performance, state management, and client caching strategies.
+- Maintain and expand our multi-brand design system component library.
+- Partner with product designers and UX researchers to create pixel-perfect, accessible workflows.
+
+Required Qualifications:
+- 5+ years of extensive experience building high-performance modern web applications.
+- Expert-level mastery of TypeScript, JavaScript, React, and modern CSS/Tailwind.
+- Deep experience with modern frontend frameworks such as Next.js or Remix.
+- Proven track record designing WCAG accessibility-compliant UI components and design systems.
+- Production proficiency with frontend testing libraries (Jest, React Testing Library, Cypress).
+- Strong understanding of GraphQL client architectures and state management.
+
+Preferred Qualifications:
+- Familiarity with WebAssembly, WebGL, or Canvas rendering.
+- Experience with full-stack Node.js server architectures.
+- Experience managing Storybook component documentation pipelines.
