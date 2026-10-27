@@ -36,11 +36,21 @@ class WeightsConfig(BaseModel):
         return self
 
 
+class RateLimitConfig(BaseModel):
+    min_request_interval: float = 0.5
+    max_retries: int = 1
+    backoff_base: float = 1.0
+    cooldown_seconds: float = 60.0
+    circuit_breaker_threshold: int = 2
+    ollama_request_interval: float = 0.25
+
+
 class RewriterConfig(BaseModel):
     enabled: bool = True
     providers: List[ApiProviderConfig] = Field(default_factory=list)
     ollama_model: str = "qwen2.5:1.5b"
     ollama_timeout: int = 30
+    rate_limit: RateLimitConfig = Field(default_factory=RateLimitConfig)
 
     # Legacy fields for backwards compatibility
     api_url: str = ""

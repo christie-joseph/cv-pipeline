@@ -24,3 +24,7 @@ __pycache__/
 # IDE Settings
 .vscode/
 .idea/
+
+# Local Reference Materials & Zips
+References/
+*.zip

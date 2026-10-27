@@ -21,6 +21,15 @@ rewriter:
   ollama_model: "qwen2.5:1.5b"
   ollama_timeout: 30
 
+  # API Rate Limiting & Anti-DDoS Safety Settings
+  rate_limit:
+    min_request_interval: 0.5    # Minimum seconds between requests to the same cloud API
+    max_retries: 1               # Transient error retries with exponential backoff before failover
+    backoff_base: 1.0            # Base seconds for exponential backoff + random jitter
+    cooldown_seconds: 60.0       # Cooldown window when rate limited (429/503) or circuit broken
+    circuit_breaker_threshold: 2 # Consecutive failures before temporarily tripping a provider
+    ollama_request_interval: 0.25 # Minimum seconds between sequential local Ollama requests
+
   # Stacked Cloud API Providers (Tried in order of priority: 1st OpenRouter -> 2nd Gemini -> 3rd Cerebras -> 4th Groq)
   # Lower priority number = higher priority. You can also define custom providers or set CUSTOM_API_KEY in .env.
   providers:

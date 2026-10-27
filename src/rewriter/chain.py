@@ -64,13 +64,15 @@ class RewriterChain:
 
         # Option A: Stacked Cloud LLM API Pool (Gemini, Groq, OpenRouter, Cerebras)
         self.option_a = ApiRewriter(
-            providers=self.rewriter_cfg.providers
+            providers=self.rewriter_cfg.providers,
+            rate_limit_config=getattr(self.rewriter_cfg, "rate_limit", None)
         )
 
         # Option B: Local Ollama GPU/CPU
         self.option_b = OllamaRewriter(
             model_name=self.rewriter_cfg.ollama_model,
-            timeout_seconds=self.rewriter_cfg.ollama_timeout
+            timeout_seconds=self.rewriter_cfg.ollama_timeout,
+            rate_limit_config=getattr(self.rewriter_cfg, "rate_limit", None)
         )
 
         # Option C: Rule-Based Fallback (Deterministic, Upgraded)
